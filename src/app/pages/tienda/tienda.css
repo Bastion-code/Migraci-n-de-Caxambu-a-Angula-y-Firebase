@@ -1,0 +1,577 @@
+/*==========================================================*/
+/* 1. ESTILOS BASE Y MODO OSCURO (Existentes) */
+/*==========================================================*/
+
+/* Estilos para el modo oscuro en la página del cliente */
+body.dark-mode .client-page {
+    background-color: var(--dark-color);
+    color: #fff;
+}
+body.dark-mode .client-dashboard,
+body.dark-mode .client-section {
+    background-color: #222;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+body.dark-mode .welcome-message {
+    color: #ccc;
+}
+body.dark-mode .section-title {
+    color: var(--primary-color);
+}
+body.dark-mode .orders-list p {
+    color: #aaa;
+}
+body.dark-mode .container-products .card-product {
+    background-color: #333;
+}
+body.dark-mode .container-products h3 {
+    color: #fff;
+}
+body.dark-mode .container-products p.price {
+    color: #fff;
+}
+body.dark-mode .container-products p.price span {
+    color: #888;
+}
+
+/* Estilos principales de la página del cliente */
+.main-content.client-page {
+    background-color: var(--background-color);
+    padding: 4rem 0;
+}
+
+.client-dashboard {
+    background-color: #fff;
+    padding: 4rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 3rem;
+}
+
+.heading-1 {
+    font-size: 3.5rem;
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+}
+
+#clientName {
+    color: var(--primary-color);
+}
+
+.welcome-message {
+    font-size: 1.6rem;
+    color: #555;
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+.client-section {
+    background-color: #f5f5f5;
+    padding: 3rem;
+    border-radius: 0.8rem;
+    margin-bottom: 2rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    color: var(--dark-color);
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: 1rem;
+    margin-bottom: 2rem;
+}
+
+.orders-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 1rem;
+}
+
+.orders-list p {
+    font-style: italic;
+    color: #777;
+    font-size: 1.6rem;
+}
+
+.order-item {
+    background-color: #fff;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    border-radius: 0.8rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1.6rem;
+    border: 1px solid #f0f0f0;
+}
+
+.order-info strong {
+    color: var(--dark-color);
+    font-size: 1.8rem;
+}
+
+.order-total-container {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+}   
+
+.order-total {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.btn-view-order {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 0.8rem 1.6rem;
+    border-radius: 0.6rem;
+    border: none;
+    cursor: pointer;
+    font-size: 1.4rem;
+    transition: background 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.btn-view-order:hover {
+    background-color: var(--primary-color-dark);
+}
+
+/*==========================================================*/
+/* 2. ESTILOS DE CATÁLOGO PARA CLIENTE (NUEVO DISEÑO DE TARJETA) */
+/*==========================================================*/
+
+.remito-catalogo {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2.5rem;
+    margin-bottom: 3rem;
+    padding: 1rem;
+}
+
+.remito-catalogo .card-product {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    /* Nuevo: Añade un borde sutil para destacar */
+    border: 1px solid #e0e0e0;
+}
+body.dark-mode .remito-catalogo .card-product {
+    background-color: #383838;
+    border: 1px solid #555;
+}
+
+.remito-catalogo .card-product:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.remito-catalogo .container-img {
+    position: relative;
+    overflow: hidden;
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f9f9f9;
+    /* Nuevo: Esquina curva en la imagen */
+    border-bottom: 1px solid #eee;
+}
+body.dark-mode .remito-catalogo .container-img {
+    background-color: #444;
+}
+
+.remito-catalogo .container-img img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.remito-catalogo .content-card-product {
+    padding: 1.5rem 2rem;
+    text-align: center;
+    display: flex; /* Nuevo: Usa Flexbox para organizar el contenido */
+    flex-direction: column;
+}
+
+.remito-catalogo .content-card-product h3 {
+    font-size: 2rem;
+    color: var(--dark-color);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+body.dark-mode .remito-catalogo .content-card-product h3 {
+    color: #eee;
+}
+
+.remito-catalogo .content-card-product .price {
+    font-size: 2.4rem;
+    color: var(--success-color); /* Nuevo: Precio en color verde para destacar */
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* Control de Cantidad y Botón (Organización central) */
+.product-action-group {
+    display: flex;
+    justify-content: space-between; /* Alinea los elementos a los extremos */
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.quantity-control {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.quantity-control label {
+    font-size: 1.4rem;
+    font-weight: 500;
+    color: #555;
+}
+body.dark-mode .quantity-control label {
+    color: #ccc;
+}
+
+.catalogo-qty-input {
+    width: 6rem; /* Se reduce el ancho */
+    padding: 0.8rem 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+    font-size: 1.4rem;
+}
+body.dark-mode .catalogo-qty-input {
+    background-color: #555;
+    color: #eee;
+    border-color: #777;
+}
+
+
+/* Botón de Agregar (Rediseñado para ser prominente) */
+/* Se elimina el button-group envoltorio de HTML y CSS */
+.btn-primary-add-catalogo {
+    background-color: var(--primary-color); /* Cambiado a color primario */
+    color: #fff;
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 6px; /* Bordes un poco más suaves */
+    cursor: pointer;
+    font-size: 1.4rem;
+    font-weight: 500;
+    transition: background-color 0.3s;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.btn-primary-add-catalogo:hover {
+    background-color: var(--primary-color-dark);
+}
+
+
+/*==========================================================*/
+/* 3. ESTILOS DE GENERADOR DE REMITOS/CARRITO */
+/*==========================================================*/
+
+.remito-section .section-title {
+    color: var(--dark-color);
+}
+
+.remito-generator-card {
+    background-color: #f5f5f5;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+body.dark-mode .remito-generator-card {
+    background-color: #555;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.remito-generator-card h4 {
+    font-size: 1.8rem;
+    color: var(--dark-color);
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+}
+body.dark-mode .remito-generator-card h4 {
+    color: #eee;
+    border-bottom: 1px solid #777;
+}
+
+/* Tabla del Remito */
+.remito-table-container {
+    margin-bottom: 2rem;
+}
+
+.remito-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.4rem;
+    background-color: #fff;
+}
+body.dark-mode .remito-table {
+    background-color: #333;
+}
+
+.remito-table thead th {
+    background-color: #eee;
+    color: var(--dark-color);
+    padding: 1.2rem;
+    text-transform: uppercase;
+}
+body.dark-mode .remito-table thead th {
+    background-color: #444;
+    color: #eee;
+}
+
+.remito-table tbody td {
+    padding: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+}
+body.dark-mode .remito-table tbody td {
+    border-bottom: 1px solid #555;
+}
+
+.remito-table td:nth-child(1) { width: 3%; text-align: center; } 
+.remito-table td:nth-child(3) { width: 10%; text-align: center; } 
+.remito-table td:nth-child(4),
+.remito-table td:nth-child(5) { 
+    text-align: right; 
+    font-weight: 500;
+}
+
+/* Input de cantidad en la tabla */
+.remito-qty-input {
+    width: 6rem;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Botón de eliminar item */
+.btn-remove-item {
+    background-color: var(--danger-color);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 50px;  
+    height: 40px; 
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+
+    /*transition: background-color 0.3s ease;*/
+}
+.btn-remove-item i {
+    color: #000; 
+    font-size: 1.8rem;
+    transition: transform 0.2s ease, color 0.3s ease;
+}
+
+.btn-remove-item:hover {
+    background-color: #a71d2a;
+    box-shadow: 0 2px 8px rgba(220, 53, 69, 0.4);
+}
+
+.btn-remove-item:hover i {
+    color: #fff !important;
+    transform: rotate(10deg);
+}
+
+/* Resumen de Totales */
+.remito-summary {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    font-size: 1.6rem;
+    padding-top: 1rem;
+}
+
+.remito-summary p, .remito-summary h4 {
+    margin: 0.5rem 0;
+}
+
+.remito-summary .divider {
+    width: 40%;
+    border: none;
+    border-top: 2px solid var(--primary-color);
+    margin: 1rem 0;
+}
+body.dark-mode .remito-summary .divider {
+    border-top: 2px solid var(--primary-color-dark);
+}
+
+.summary-value {
+    font-weight: bold;
+    min-width: 10rem;
+    display: inline-block;
+    text-align: right;
+}
+
+.final-total {
+    font-size: 2.2rem;
+    color: var(--dark-color);
+}
+body.dark-mode .final-total {
+    color: #eee;
+}
+
+.final-price {
+    color: var(--success-color);
+}
+
+.btn-primary-finalize {
+    background-color: var(--success-color);
+    color: #fff;
+    padding: 1.2rem 2rem;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.6rem;
+    margin-top: 1.5rem;
+    transition: opacity 0.3s;
+}
+
+.btn-primary-finalize:hover {
+    opacity: 0.9;
+}
+
+.btn-primary-finalize:disabled {
+    background-color: #aaa;
+    cursor: not-allowed;
+}
+/* =========================================
+   ESTILOS DE LA VENTANA MODAL (DETALLES)
+   ========================================= */
+
+/* Fondo oscuro transparente */
+.modal-overlay {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Fondo negro semitransparente */
+    backdrop-filter: blur(3px); /* Efecto borroso elegante */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Caja de contenido (El ticket) */
+.modal-content {
+    background-color: #fff;
+    padding: 0;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    animation: modalSlideIn 0.3s ease;
+    overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+    from {transform: translateY(-50px); opacity: 0;}
+    to {transform: translateY(0); opacity: 1;}
+}
+
+/* Cabecera */
+.modal-header {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    font-size: 1.8rem;
+    margin: 0;
+}
+
+.close-modal {
+    color: #fff;
+    font-size: 2.5rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.close-modal:hover { color: var(--primary-color-dark); }
+
+/* Cuerpo */
+.modal-body {
+    padding: 2rem;
+    max-height: 60vh;
+    overflow-y: auto;
+}
+
+/* Tabla dentro del modal */
+.modal-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.4rem;
+    margin-bottom: 1.5rem;
+}
+.modal-table th { background-color: #f5f5f5; padding: 1rem; text-align: left; color: #333; }
+.modal-table td { border-bottom: 1px solid #eee; padding: 1rem; color: #333;}
+.text-right { text-align: right; }
+
+/* Pie de página */
+.modal-footer {
+    padding: 1.5rem;
+    background-color: #f9f9f9;
+    text-align: right;
+    border-top: 1px solid #eee;
+}
+
+.btn-close-modal {
+    background-color: #555;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.4rem;
+}
+
+/* BOTÓN "VER DETALLE" EN LA LISTA */
+.btn-ver-detalle {
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin-left: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background 0.3s;
+}
+.btn-ver-detalle:hover {
+    background-color: var(--primary-color-dark);
+}
+
+/* Modo oscuro para el modal */
+body.dark-mode .modal-content { background-color: #333; color: #fff; }
+body.dark-mode .modal-table th { background-color: #444; color: #fff; }
+body.dark-mode .modal-table td { border-color: #555; color: #eee; }
+body.dark-mode .modal-footer { background-color: #222; border-color: #444; }
