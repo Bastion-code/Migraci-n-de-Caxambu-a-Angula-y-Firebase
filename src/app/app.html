@@ -6,61 +6,59 @@
       </div>
 
       <ul class="menu">
-        <li><a routerLink="/">Inicio</a></li>
-        <li><a routerLink="/tienda">Tienda</a></li>
-        <li><a routerLink="/soporte">Soporte</a></li>
+  <li><a routerLink="/">Inicio</a></li>
+  <li><a routerLink="/tienda">Tienda</a></li>
+  <li><a routerLink="/soporte">Soporte</a></li>
 
-        <li id="nav-cart" style="display: none">
-          <a href="#" id="cart-icon"
-            ><i class="fa-solid fa-cart-shopping"></i>
-            <span class="cart-count">0</span></a
-          >
-        </li>
+  <li id="nav-cart" style="display: none">
+    <a href="#" id="cart-icon"
+      ><i class="fa-solid fa-cart-shopping"></i>
+      <span class="cart-count">0</span></a
+    >
+  </li>
 
-        <li id="nav-login">
-          <a routerLink="/login"
-            ><i class="fa-regular fa-user"></i> Acceder</a
-          >
-        </li>
+  <li id="nav-login" *ngIf="!currentUser()">
+    <a routerLink="/login"
+      ><i class="fa-regular fa-user"></i> Acceder</a
+    >
+  </li>
 
-        <li id="nav-user" class="user-menu-container" style="display: none">
-          <div class="user-avatar-btn" id="avatar-btn">
-            <i class="fa-regular fa-user"></i>
-            <span id="nav-user-name">Mi Cuenta</span>
-            <i class="fa-solid fa-chevron-down arrow-down"></i>
-          </div>
+  <li id="nav-user" class="user-menu-container" *ngIf="currentUser()">
+    <div class="user-avatar-btn" id="avatar-btn" (click)="toggleDropdown()">
+  <i class="fa-regular fa-user"></i>
+  <span id="nav-user-name">{{ currentUser()?.email }}</span>
+  <i class="fa-solid fa-chevron-down arrow-down"></i>
+</div>
 
-          <ul class="dropdown-menu" id="dropdown-menu">
-            <li class="dropdown-header">
-              <span id="drop-name" class="drop-title">Hola, Cliente</span>
-              <span id="drop-email" class="drop-subtitle"
-                >cliente@email.com</span
-              >
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <a routerLink="/perfil"
-                ><i class="fa-regular fa-user"></i> Mi Perfil</a
-              >
-            </li>
-            <li>
-              <a routerLink="/tienda"
-                ><i class="fa-solid fa-bag-shopping"></i> Mis Compras</a
-              >
-            </li>
-            <li>
-              <a href="#"><i class="fa-regular fa-heart"></i> Favoritos</a>
-            </li>
-            <li><hr class="dropdown-divider" /></li>
-            <li>
-              <a href="#" id="btn-cerrar-sesion" class="text-danger"
-                ><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar
-                Sesión</a
-              >
-            </li>
-          </ul>
-        </li>
-      </ul>
+    <ul class="dropdown-menu" id="dropdown-menu" *ngIf="dropdownOpen()">
+      <li class="dropdown-header">
+        <span id="drop-name" class="drop-title">Hola</span>
+        <span id="drop-email" class="drop-subtitle">{{ currentUser()?.email }}</span>
+      </li>
+      <li><hr class="dropdown-divider" /></li>
+      <li>
+        <a routerLink="/perfil"
+          ><i class="fa-regular fa-user"></i> Mi Perfil</a
+        >
+      </li>
+      <li>
+        <a routerLink="/tienda"
+          ><i class="fa-solid fa-bag-shopping"></i> Mis Compras</a
+        >
+      </li>
+      <li>
+        <a href="#"><i class="fa-regular fa-heart"></i> Favoritos</a>
+      </li>
+      <li><hr class="dropdown-divider" /></li>
+      <li>
+        <a href="#" id="btn-cerrar-sesion" class="text-danger" (click)="cerrarSesion()"
+          ><i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar
+          Sesión</a
+        >
+      </li>
+    </ul>
+  </li>
+</ul>
     </nav>
   </div>
 </header>
