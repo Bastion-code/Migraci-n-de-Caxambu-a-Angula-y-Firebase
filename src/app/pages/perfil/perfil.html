@@ -6,8 +6,7 @@
     </div>
     <div class="perfil-info-basica">
       <h2>Mi Perfil</h2>
-      <!-- Usamos el pipe async para leer el usuario en tiempo real desde Firebase -->
-      <p>{{ (authService.currentUser$ | async)?.email || 'Cargando...' }}</p>
+      <p>{{ (authService.currentUser$ | async)?.displayName || 'Sin nombre configurado' }}</p>
     </div>
   </div>
 
@@ -17,8 +16,28 @@
       <div class="card-blanca">
         <div class="card-title-row">
           <h3>Datos de la Cuenta</h3>
-          <button class="btn-modificar">Modificar</button>
+          <!-- Botón dinámico -->
+          @if (!editando) {
+            <button class="btn-modificar" (click)="activarEdicion()">Modificar</button>
+          } @else {
+            <button class="btn-modificar" style="color: var(--success-color); font-weight: bold;" (click)="guardarDatos()">Guardar</button>
+          }
         </div>
+
+        <!-- Fila Nombre -->
+        <div class="dato-row">
+          <div class="icon-dato"><i class="fa-regular fa-id-badge"></i></div>
+          <div class="dato-text">
+            <span>Nombre Completo</span>
+            @if (!editando) {
+              <p>{{ (authService.currentUser$ | async)?.displayName || 'Aún no ingresaste tu nombre' }}</p>
+            } @else {
+              <input type="text" [(ngModel)]="nombreActual" placeholder="Ej: Sebastián Vidal" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1.4rem;">
+            }
+          </div>
+        </div>
+
+        <!-- Fila Correo -->
         <div class="dato-row">
           <div class="icon-dato"><i class="fa-regular fa-envelope"></i></div>
           <div class="dato-text">
@@ -26,6 +45,7 @@
             <p>{{ (authService.currentUser$ | async)?.email }}</p>
           </div>
         </div>
+
         <div class="dato-row">
           <div class="icon-dato"><i class="fa-solid fa-lock"></i></div>
           <div class="dato-text">
@@ -33,6 +53,11 @@
             <p>********</p>
           </div>
         </div>
+
+        <!-- Mensaje de éxito -->
+        @if (mensaje) {
+          <p style="color: var(--success-color); font-size: 1.4rem; margin-top: 1rem;">{{ mensaje }}</p>
+        }
       </div>
     </div>
 
