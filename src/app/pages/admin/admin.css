@@ -2,27 +2,22 @@
 /* 1. IMPORTS Y VARIABLES */
 /*==========================================================*/
 
-/* Importar la fuente Poppins si no la tienes en styles.css */
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
 
-/* Colores base y variables (deberían ser consistentes con styles.css) */
-/* NOTA: Estas variables deberían estar idealmente en styles.css para ser globales. */
-
 :root {
-	--primary-color: #402723;
-	--primary-color-dark: #b5906f;
-	--background-color: #f9f5f0;
-	--dark-color: #402723;
-	--light-color: #888;
-	--success-color: #28a745;
-	--danger-color: #dc3545;
+    --primary-color: #402723;
+    --primary-color-dark: #b5906f;
+    --background-color: #f9f5f0;
+    --dark-color: #402723;
+    --light-color: #888;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
 }
 
 /*==========================================================*/
 /* 2. ESTILOS BASE DEL PANEL Y DARK MODE */
 /*==========================================================*/
 
-/* Estilos principales del panel */
 .main-content.vendedor-page {
     padding: 4rem 0;
     min-height: 100vh;
@@ -30,10 +25,6 @@
 
 .heading-1 {
     margin-bottom: 3rem;
-}
-
-.admin-dashboard .container {
-    /* Si necesitas ajustar el ancho del contenedor en esta página */
 }
 
 .admin-section {
@@ -158,7 +149,6 @@ body.dark-mode .btn-sm {
     background-color: #666;
 }
 
-/* Estilo para el botón de Confirmar Precio (Check) */
 .confirm-action {
     background-color: var(--success-color); 
 }
@@ -166,21 +156,42 @@ body.dark-mode .btn-sm {
 .confirm-action:hover {
     background-color: #218838; 
 }
-body.dark-mode .confirm-action {
-    background-color: var(--success-color);
-}
-body.dark-mode .confirm-action:hover {
-    background-color: #218838;
-}
+
 
 /*==========================================================*/
-/* 4. ESTILOS DE PEDIDOS DE CLIENTES (ORDER CARD) */
+/* 4. LAYOUT SUPERIOR: INVENTARIO (3/4) Y PENDIENTES (1/4) */
+/*==========================================================*/
+
+.top-admin-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .top-admin-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pending-card-compact {
+  border-left: 4px solid orange;
+  background: #fffdf9;
+  padding: 1.2rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+
+/*==========================================================*/
+/* 5. ESTILOS DE PEDIDOS Y TARJETAS */
 /*==========================================================*/
 
 .order-list {
     display: grid;
     gap: 2rem;
-    /* Para 2 columnas en pantallas grandes */
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
 }
 
@@ -211,16 +222,6 @@ body.dark-mode .order-card p {
     color: #eee;
 }
 
-.order-total {
-    margin-top: 1.5rem;
-    display: flex;
-    justify-content: flex-end;
-}
-
-.order-total h4 {
-    font-size: 1.8rem;
-}
-
 .order-actions {
     margin-top: 1rem;
     display: flex;
@@ -229,7 +230,6 @@ body.dark-mode .order-card p {
 }
 
 .btn-approve, .btn-deny {
-    /* Ajustes para que los botones de aprobar/rechazar tengan texto */
     padding: 1rem 1.5rem;
     border: none;
     border-radius: 4px;
@@ -259,7 +259,7 @@ body.dark-mode .order-card p {
 
 
 /*==========================================================*/
-/* 5. ESTILOS DE DETALLE DE PEDIDO (EL NUEVO BLOQUE) */
+/* 6. ESTILOS DE DETALLE DE PEDIDO */
 /*==========================================================*/
 
 .order-details-summary {
@@ -276,78 +276,18 @@ body.dark-mode .order-details-summary {
     border: 1px dashed #888;
 }
 
-.order-details-summary h5 {
-    font-size: 1.6rem;
-    margin-bottom: 1rem;
-    color: var(--primary-color);
-    text-align: center;
-}
-body.dark-mode .order-details-summary h5 {
-    color: var(--primary-color-dark);
+.order-card.approved {
+  border-left: 5px solid green;
+  background: #f4faf4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
 }
 
-/* Estilos de la tabla de resumen de productos */
-.order-summary-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 1rem;
-    font-size: 1.3rem;
-}
-
-.order-summary-table thead th {
-    background-color: #f5f5f5;
-    color: var(--dark-color);
-    padding: 1rem;
-    border: none;
-    border-bottom: 1px solid #ddd;
-}
-body.dark-mode .order-summary-table thead th {
-    background-color: #383838;
-    color: #eee;
-}
-
-.order-summary-table tbody td {
-    padding: 0.8rem 1rem;
-    border: none;
-    border-bottom: 1px dotted #eee;
-}
-body.dark-mode .order-summary-table tbody td {
-    border-bottom: 1px dotted #555;
-}
-
-/* Alineación de columnas de números */
-.order-summary-table th:nth-child(2),
-.order-summary-table td:nth-child(2),
-.order-summary-table th:nth-child(3),
-.order-summary-table td:nth-child(3),
-.order-summary-table th:last-child,
-.order-summary-table td:last-child {
-    text-align: right;
-}
-
-/* Estilos de los totales y ganancia */
-.summary-totals p {
-    font-size: 1.4rem;
-    text-align: right;
-    margin: 0.5rem 0;
-}
-
-.summary-totals .divider {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin: 0.5rem 0;
-}
-body.dark-mode .summary-totals .divider {
-    border-top: 1px solid #666;
-}
-
-.summary-totals .ganancia {
-    font-size: 1.6rem;
-    color: var(--success-color);
-}
-
-input:disabled {
-    border: 1px solid #eee;
-    background-color: #f9f9f9;
-    color: #999;
+.order-card.denied {
+  border-left: 5px solid red;
+  background: #faf4f4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
 }

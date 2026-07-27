@@ -6,4 +6,5 @@ export interface Producto {
   categoria: string;
   imagenUrl: string;
   stock: number;
+  descuento?: number; // Descuento opcional
 }

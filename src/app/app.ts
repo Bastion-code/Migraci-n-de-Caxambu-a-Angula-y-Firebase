@@ -1,8 +1,9 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
-import { RouterOutlet, RouterLink, Router } from '@angular/router';
+import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth, onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from './app.config';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -23,9 +24,19 @@ export class AppComponent implements OnInit {
   // Controla si el menú desplegable está abierto o cerrado
   dropdownOpen = signal(false);
 
+  // Controla si se debe mostrar el header y footer globales
+  showNavigation = signal(true);
+
   ngOnInit() {
     onAuthStateChanged(this.auth, (user) => {
       this.currentUser.set(user);
+    });
+
+    // Escucha los cambios de ruta para ocultar/mostrar elementos en /soporte
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe((event: any) => {
+      this.showNavigation.set(!event.urlAfterRedirects.includes('/soporte'));
     });
   }
 

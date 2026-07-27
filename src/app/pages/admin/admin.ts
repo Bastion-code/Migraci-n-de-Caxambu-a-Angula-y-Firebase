@@ -1,9 +1,74 @@
-import { Component } from '@angular/core';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterLink, Router } from '@angular/router';
+import { FormsModule } from '@angular/forms';
+import { ProductoService } from '../../services/producto.service';
+import { Producto } from '../../models/producto.model';
+import { FIRESTORE, FIREBASE_AUTH } from '../../app.config';
+import { collection, collectionData } from 'rxfire/firestore';
+import { doc, updateDoc } from 'firebase/firestore';
+import { Firestore } from 'firebase/firestore';
+import { Auth } from 'firebase/auth';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-admin',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, RouterLink, FormsModule],
   templateUrl: './admin.html',
-  styleUrl: './admin.css',
+  styleUrl: './admin.css'
 })
-export class Admin {}
+export class AdminComponent implements OnInit {
+  private productoService = inject(ProductoService);
+  private firestore: Firestore = inject(FIRESTORE);
+  private auth: Auth = inject(FIREBASE_AUTH);
+  private router = inject(Router);
+
+  productos = signal<Producto[]>([]);
+  pedidos = signal<any[]>([]);
+
+  ngOnInit() {
+    // Como la ruta ya está protegida y se llega desde el login de Mariano, cargamos los datos directo
+    this.cargarDatosAdmin();
+  }
+
+  cargarDatosAdmin() {
+    this.productoService.getProductos().subscribe(data => {
+      this.productos.set(data);
+    });
+
+    const pedidosRef = (collection as any)(this.firestore, 'pedidos');
+    (collectionData(pedidosRef, { idField: 'id' }) as Observable<any[]>).subscribe(data => {
+      const ordenados = data.sort((a, b) => {
+        const timeA = a.timestamp?.seconds || 0;
+        const timeB = b.timestamp?.seconds || 0;
+        return timeB - timeA;
+      });
+      this.pedidos.set(ordenados);
+    });
+  }
+
+  async guardarProducto(producto: Producto) {
+    if (!producto.id) return;
+    try {
+      await this.productoService.actualizarProducto(producto.id, {
+        precio: producto.precio,
+        stock: producto.stock
+      });
+      alert('¡Producto actualizado con éxito!');
+    } catch (error) {
+      console.error('Error al actualizar producto:', error);
+      alert('Hubo un error al actualizar el producto.');
+    }
+  }
+
+  async cambiarEstadoPedido(pedidoId: string, nuevoEstado: string) {
+    try {
+      const pedidoRef = doc(this.firestore, 'pedidos', pedidoId);
+      await updateDoc(pedidoRef, { estado: nuevoEstado });
+    } catch (error) {
+      console.error('Error al cambiar estado del pedido:', error);
+      alert('No se pudo actualizar el estado del pedido.');
+    }
+  }
+}

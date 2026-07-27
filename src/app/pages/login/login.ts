@@ -2,30 +2,41 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { Auth, signInWithEmailAndPassword } from 'firebase/auth';
+import { FIREBASE_AUTH } from '../../app.config';
 
 @Component({
   selector: 'app-login',
+  standalone: true,
   imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './login.html',
-  styleUrl: './login.css',
+  styleUrl: './login.css'
 })
-export class Login {
-  private authService = inject(AuthService);
+export class LoginComponent {
+  private auth: Auth = inject(FIREBASE_AUTH);
   private router = inject(Router);
 
-  email = '';
-  password = '';
-  errorMessage = '';
+  email: string = '';
+  pass: string = '';
+  errorMessage: string = '';
 
-  async onSubmit() {
-    this.errorMessage = '';
+  // Esta es la función que tu login.html está buscando con el (ngSubmit)="onSubmit()"
+  onSubmit() {
+    this.iniciarSesion();
+  }
+
+  async iniciarSesion() {
     try {
-      await this.authService.login(this.email, this.password);
-      this.router.navigate(['/']);
-    } catch (error) {
-      this.errorMessage = 'Correo o contraseña incorrectos.';
-      console.error(error);
+      const credencial = await signInWithEmailAndPassword(this.auth, this.email, this.pass);
+      
+      if (credencial.user.email === 'mariano@caxambu.com') {
+        this.router.navigate(['/admin']);
+      } else {
+        this.router.navigate(['/tienda']);
+      }
+    } catch (error: any) {
+      console.error('Error al iniciar sesión:', error);
+      this.errorMessage = 'Correo o contraseña incorrectos. Por favor, verificá tus datos.';
     }
   }
 }

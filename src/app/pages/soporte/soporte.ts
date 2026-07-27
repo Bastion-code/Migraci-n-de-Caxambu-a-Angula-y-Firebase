@@ -1,9 +1,13 @@
 import { Component } from '@angular/core';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-soporte',
-  imports: [],
+  standalone: true,
+  imports: [RouterLink],
   templateUrl: './soporte.html',
-  styleUrl: './soporte.css',
+  styleUrl: './soporte.css'
 })
-export class Soporte {}
+export class Soporte {
+  // Lógica de soporte (si se requiere a futuro)
+}

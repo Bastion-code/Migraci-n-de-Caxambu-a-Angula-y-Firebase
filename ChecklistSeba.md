@@ -4,7 +4,7 @@
 - [x] ✅ **Features (Características):** Solucionada la superposición en el Home mediante CSS Grid.
 - [x] ✅ **Modo Oscuro:** Estilos adaptados correctamente en el Home y login.
 - [x] ✅ **Página de Perfil:** Maquetado completo conectado con la sesión actual.
-- [ ] ❌ **Catálogo de Productos (Home):** Espacio vacío en "Los Mejores Productos". **Nota para Giuli:** Hay que cargar los documentos en la colección `productos` de Firestore para que se dibujen.
+- [x] ✅ **Catálogo de Productos (Home):** Conectado con Firestore y renderizado dinámico de productos e imágenes.
 - [ ] ❌ **Refactorización:** El Header y Footer actualmente están "hardcodeados" dentro de `app.html`. Hay que mudarlos a sus propios componentes (`app-header`, `app-footer`).
 
 ## ⚙️ Funcionalidad y Rutas

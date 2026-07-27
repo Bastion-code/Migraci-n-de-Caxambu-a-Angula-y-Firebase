@@ -1,1 +1,114 @@
-<p>tienda works!</p>
+<main class="main-content">
+  <div class="container">
+    <h1 class="heading-1">Tienda de Cafés Caxambu</h1>
+
+    <div class="tienda-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+      
+      <!-- Listado de Productos -->
+      <div class="container-products">
+        @for (producto of productos(); track producto.id) {
+          <div class="card-product">
+            <div class="container-img">
+              <img [src]="$any(producto).imagen || ''" [alt]="producto.nombre" />
+            </div>
+            <div class="content-card-product">
+              <h3>{{ producto.nombre }}</h3>
+              <p class="price">${{ producto.precio }}</p>
+              <div class="add-cart" (click)="agregarAlCarrito(producto)" title="Agregar al carrito">
+                <i class="fa-solid fa-basket-shopping"></i>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <p style="grid-column: 1 / -1; font-size: 1.6rem; color: var(--light-color);">Cargando productos del catálogo o no hay stock disponible...</p>
+        }
+      </div>
+
+      <!-- Columna Derecha: Carrito + Historial Desplegable -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <!-- Resumen del Carrito -->
+        <div class="carrito-sidebar" style="background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;">
+          <h2 style="font-size: 2rem; color: var(--dark-color); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+            <i class="fa-solid fa-cart-shopping"></i> Tu Carrito
+          </h2>
+
+          @if (carrito().length === 0) {
+            <p style="font-size: 1.4rem; color: #777;">El carrito está vacío.</p>
+          } @else {
+            <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+              @for (item of carrito(); track item.producto.id) {
+                <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 1.4rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 0.8rem;">
+                  <span>{{ item.producto.nombre }} (x{{ item.cantidad }})</span>
+                  <span style="font-weight: 600; color: var(--primary-color);">${{ item.producto.precio * item.cantidad }}</span>
+                </li>
+              }
+            </ul>
+
+            <div style="border-top: 2px solid #eee; padding-top: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; font-size: 1.8rem; font-weight: bold; color: var(--dark-color);">
+              <span>Total:</span>
+              <span>${{ carrito().reduce((acc, item) => acc + (item.producto.precio * item.cantidad), 0) }}</span>
+            </div>
+
+            <button (click)="finalizarCompra()" style="width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.5rem; font-weight: 600; cursor: pointer; text-transform: uppercase;">
+              Realizar Pedido
+            </button>
+            <p style="font-size: 1.1rem; color: #888; margin-top: 1rem; text-align: center;">Quedará pendiente hasta la confirmación del vendedor.</p>
+          }
+        </div>
+
+        <!-- Historial de Pedidos Desplegable (Abajo del carrito) -->
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden;">
+          <div (click)="toggleHistorial()" style="padding: 2rem; background-color: var(--primary-color); color: white; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+            <h3 style="font-size: 1.6rem; margin: 0; display: flex; align-items: center; gap: 1rem;">
+              <i class="fa-solid fa-clock-rotate-left"></i> Historial de Pedidos
+            </h3>
+            <i class="fa-solid" [ngClass]="historialAbierto() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </div>
+
+          @if (historialAbierto()) {
+            <div style="padding: 2rem; max-height: 300px; overflow-y: auto;">
+              @if (historialPedidos().length === 0) {
+                <p style="font-size: 1.3rem; color: #777; text-align: center; margin: 0;">No tenés pedidos registrados.</p>
+              } @else {
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.5rem;">
+                  @for (pedido of historialPedidos(); track pedido.id) {
+                    <li style="border: 1px solid #eee; padding: 1.4rem; border-radius: 8px; font-size: 1.3rem; background: #fafafa;">
+                      
+                      <!-- Cabecera del pedido con ID y Estado -->
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-weight: bold; border-bottom: 1px dashed #ddd; padding-bottom: 0.6rem;">
+                        <span style="color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden sin ID' }}</span>
+                        <span [style.color]="pedido.estado === 'confirmado' ? 'green' : 'orange'" style="text-transform: uppercase; font-size: 1.1rem;">
+                          {{ pedido.estado }}
+                        </span>
+                      </div>
+                      
+                      <!-- Fecha y Hora -->
+                      <div style="font-size: 1.1rem; color: #888; margin-bottom: 0.8rem;">
+                        <i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}
+                      </div>
+
+                      <!-- Detalle de productos -->
+                      <div style="color: #666; font-size: 1.2rem; margin-bottom: 0.8rem;">
+                        @for (it of pedido.items; track it.producto.id) {
+                          <div>• {{ it.producto.nombre }} (x{{ it.cantidad }})</div>
+                        }
+                      </div>
+
+                      <!-- Total -->
+                      <div style="text-align: right; font-weight: bold; font-size: 1.3rem; color: var(--dark-color);">
+                        Total: ${{ pedido.total }}
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</main>
