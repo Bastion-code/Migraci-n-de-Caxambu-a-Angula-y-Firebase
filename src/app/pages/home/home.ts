@@ -1,4 +1,4 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ProductoService } from '../../services/producto';
 
@@ -10,14 +10,20 @@ import { ProductoService } from '../../services/producto';
   styleUrls: ['./home.css']
 })
 export class Home implements OnInit {
-  private productoService = inject(ProductoService);
-  
+  productoService = inject(ProductoService);
+  cdr = inject(ChangeDetectorRef);
   productos: any[] = [];
 
   ngOnInit(): void {
+    this.cargarProductos();
+  }
+
+  cargarProductos() {
     this.productoService.getProductos().subscribe({
       next: (data) => {
+        console.log("PRODUCTOS ASIGNADOS A LA VISTA:", data);
         this.productos = data;
+        this.cdr.detectChanges(); // Forzamos a Angular a renderizar las tarjetas
       },
       error: (err) => {
         console.error('Error al cargar los productos:', err);
