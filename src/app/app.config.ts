@@ -20,6 +20,9 @@ export const FIRESTORE = new InjectionToken<Firestore>('firestore', {
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes)
+    provideRouter(routes),
+    // Registramos los servicios de Firebase para que estén disponibles en la app
+    { provide: FIREBASE_AUTH, useFactory: () => getAuth(firebaseApp) },
+    { provide: FIRESTORE, useFactory: () => getFirestore(firebaseApp) }
   ]
 };

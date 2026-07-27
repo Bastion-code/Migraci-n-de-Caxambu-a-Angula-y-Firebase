@@ -1,1 +1,53 @@
-<p>perfil works!</p>
+<div class="main-perfil container">
+  <!-- Encabezado del perfil -->
+  <div class="perfil-header-card">
+    <div class="avatar-circle">
+      <i class="fa-regular fa-user"></i>
+    </div>
+    <div class="perfil-info-basica">
+      <h2>Mi Perfil</h2>
+      <!-- Usamos el pipe async para leer el usuario en tiempo real desde Firebase -->
+      <p>{{ (authService.currentUser$ | async)?.email || 'Cargando...' }}</p>
+    </div>
+  </div>
+
+  <div class="perfil-grid">
+    <!-- Columna Izquierda: Datos -->
+    <div class="columna-principal">
+      <div class="card-blanca">
+        <div class="card-title-row">
+          <h3>Datos de la Cuenta</h3>
+          <button class="btn-modificar">Modificar</button>
+        </div>
+        <div class="dato-row">
+          <div class="icon-dato"><i class="fa-regular fa-envelope"></i></div>
+          <div class="dato-text">
+            <span>Correo Electrónico</span>
+            <p>{{ (authService.currentUser$ | async)?.email }}</p>
+          </div>
+        </div>
+        <div class="dato-row">
+          <div class="icon-dato"><i class="fa-solid fa-lock"></i></div>
+          <div class="dato-text">
+            <span>Contraseña</span>
+            <p>********</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Columna Derecha: Navegación -->
+    <div class="columna-lateral">
+      <div class="card-blanca menu-lateral">
+        <a routerLink="/tienda">
+          <span><i class="fa-solid fa-bag-shopping"></i> Mis Compras</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </a>
+        <a routerLink="/soporte">
+          <span><i class="fa-regular fa-circle-question"></i> Soporte</span>
+          <i class="fa-solid fa-chevron-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

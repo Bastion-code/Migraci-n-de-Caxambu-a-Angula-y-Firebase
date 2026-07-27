@@ -1,28 +1,47 @@
-import { Component, signal, inject } from '@angular/core';
-import { RouterOutlet, RouterModule } from '@angular/router';
+import { Component, inject, signal, OnInit } from '@angular/core';
+import { RouterOutlet, RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { toSignal } from '@angular/core/rxjs-interop';
-import { AuthService } from './services/auth.service';
+import { Auth, onAuthStateChanged, User } from 'firebase/auth';
+import { FIREBASE_AUTH } from './app.config';
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, RouterModule, CommonModule],
+  standalone: true,
+  imports: [RouterOutlet, RouterLink, CommonModule],
   templateUrl: './app.html',
-  styleUrl: './app.css'
+  styleUrls: ['./app.css']
 })
-export class App {
-  protected readonly title = signal('caxambu-angular');
+export class AppComponent implements OnInit {
+  title = 'CaxambuAngular';
+  
+  private auth: Auth = inject(FIREBASE_AUTH);
+  private router = inject(Router);
 
-  private authService = inject(AuthService);
-  currentUser = toSignal(this.authService.currentUser$, { initialValue: null });
+  // Señal reactiva para el usuario actual
+  currentUser = signal<User | null>(null);
+  
+  // Controla si el menú desplegable está abierto o cerrado
   dropdownOpen = signal(false);
 
-  toggleDropdown() {
-    this.dropdownOpen.update(v => !v);
+  ngOnInit() {
+    onAuthStateChanged(this.auth, (user) => {
+      this.currentUser.set(user);
+    });
   }
 
+  // Función para abrir/cerrar el menú
+  toggleDropdown() {
+    this.dropdownOpen.update(valor => !valor);
+  }
+
+  // Función para cerrar sesión
   async cerrarSesion() {
-    await this.authService.logout();
-    this.dropdownOpen.set(false);
+    try {
+      await this.auth.signOut();
+      this.dropdownOpen.set(false);
+      this.router.navigate(['/login']);
+    } catch (error) {
+      console.error('Error al cerrar sesión:', error);
+    }
   }
 }

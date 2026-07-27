@@ -38,7 +38,28 @@
   <section class="container top-products">
     <h1 class="heading-1">Los Mejores Productos</h1>
     <div class="container-products" id="catalogo-index">
-        <p style="text-align:center; width:100%; grid-column: 1/-1;">Cargando nuestros mejores productos...</p>
+      
+      <!-- Bucle dinámico de Angular para generar las tarjetas de los cafés -->
+      @for (producto of productos; track producto.id) {
+        <div class="card-product">
+          <div class="container-img">
+            <img [src]="producto.imagen" [alt]="producto.nombre" />
+            
+            <!-- Etiqueta de descuento condicional -->
+            @if (producto.descuento) {
+              <span class="discount">{{ producto.descuento }}</span>
+            }
+          </div>
+          <div class="content-card-product">
+            <h3>{{ producto.nombre }}</h3>
+            <span class="add-cart">
+              <i class="fa-solid fa-basket-shopping"></i>
+            </span>
+            <p class="price">${{ producto.precio }}</p>
+          </div>
+        </div>
+      }
+
     </div>
   </section>
 
