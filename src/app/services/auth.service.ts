@@ -5,6 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  updateProfile, // <-- AGREGAR ESTO
   User
 } from 'firebase/auth';
 import { Observable } from 'rxjs';
@@ -14,7 +15,6 @@ import { FIREBASE_AUTH } from '../app.config';
 export class AuthService {
   private auth: Auth = inject(FIREBASE_AUTH);
 
-  // Observable que emite el usuario actual (o null si no hay sesión)
   currentUser$ = new Observable<User | null>((subscriber) => {
     return onAuthStateChanged(this.auth, (user) => subscriber.next(user));
   });
@@ -33,5 +33,13 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     return !!this.auth.currentUser;
+  }
+
+  // --- NUEVA FUNCIÓN PARA CAMBIAR EL NOMBRE ---
+  actualizarNombre(nombre: string) {
+    if (this.auth.currentUser) {
+      return updateProfile(this.auth.currentUser, { displayName: nombre });
+    }
+    return Promise.reject('No hay usuario activo');
   }
 }
