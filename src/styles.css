@@ -1,15 +1,20 @@
 /* Fuente externa Poppins */ 
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap'); 
 
-/* Variables de color globales */ 
-:root { 
-  --primary-color: #402723; 
-  --primary-color-dark: #b5906f; 
-  --background-color: #f9f5f0; 
-  --dark-color: #402723; 
-  --light-color: #888; 
-  --success-color: #28a745; 
-  --danger-color: #dc3545; 
+:root {
+	--primary-color: #402723;
+	--primary-color-dark: #b5906f;
+	--background-color: #f9f5f0;
+	--dark-color: #402723;
+	--light-color: #888;
+	--success-color: #28a745;
+	--danger-color: #dc3545;
+}
+
+
+html {
+	font-size: 62.5%;
+	font-family: 'Poppins', sans-serif;
 }
 
 /* Reset y estilos base */ 
@@ -173,12 +178,233 @@ body {
 .user-avatar-btn { font-size: 1.3rem; font-weight: 600; text-transform: uppercase; color: #fff; display: flex; align-items: center; gap: 8px; cursor: pointer; transition: color 0.3s ease; }
 .user-avatar-btn i { font-size: 1.4rem; }
 
-/* ========================================================================== MAGIA RESPONSIVA (Celulares y Tablets) ========================================================================== */ 
-@media (max-width: 768px) { 
-  .content-banner h2 { font-size: 3rem; } 
-  .heading-1 { font-size: 2.5rem; } 
-  .navbar { flex-direction: column; gap: 15px; } 
-  .menu { flex-wrap: wrap; justify-content: center; gap: 15px; } 
-  .remito-table-container { overflow-x: auto; display: block; width: 100%; } 
-  .copyright { flex-direction: column; gap: 15px; text-align: center; } 
+.contact ul, .information ul, .my-account ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.contact ul li, 
+.information ul li a, 
+.my-account ul li a,
+.newsletter .content p {
+    font-size: 1.4rem;
+    color: #d1d1d1; 
+    text-decoration: none;
+    line-height: 1.5;
+}
+
+.information ul li a:hover, 
+.my-account ul li a:hover {
+    color: #fff;
+    text-decoration: underline;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.social-icons span {
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.social-icons span i {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+}
+
+.social-icons span:hover {
+    transform: translateY(-5px);
+    background-color: var(--primary-color-dark);
+}
+
+.social-icons span:hover i {
+    color: #fff;
+}
+
+.newsletter .content input {
+    width: 100%;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+    outline: none;
+}
+
+.newsletter .content button {
+    background-color: var(--primary-color-dark);
+    color: #fff;
+    border: none;
+    padding: 1.2rem 2.5rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    text-transform: uppercase;
+    transition: background 0.3s;
+}
+
+.newsletter .content button:hover {
+    background-color: #967052;
+}
+
+.copyright {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 3rem 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 1400px; 
+    margin: 5rem auto 0 auto;
+}
+
+.copyright p {
+    font-size: 1.3rem;
+    color: #aaa;
+}
+
+.copyright img {
+    height: 3rem; 
+}
+
+/* --- Carrito en el Header --- */
+.nav-cart a {
+    position: relative;
+    font-size: 1.8rem;
+}
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    background-color: var(--danger-color);
+    color: white;
+    font-size: 1rem;
+    padding: 2px 6px;
+    border-radius: 50%;
+    font-weight: bold;
+}
+
+
+.user-menu-container {
+    position: relative;
+}
+
+.dropdown-menu {
+    display: flex;
+    position: absolute;
+    top: 40px;
+    right: 0;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    width: 220px;
+    z-index: 1000;
+    flex-direction: column;
+    padding: 10px 0;
+}
+
+.dropdown-header {
+    padding: 10px 20px;
+    display: flex;
+    flex-direction: column;
+}
+
+.drop-title {
+    color: var(--dark-color);
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+.drop-subtitle {
+    color: var(--light-color);
+    font-size: 1.2rem;
+}
+
+.dropdown-menu a {
+    color: #444 !important;
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.4rem;
+    text-transform: none;
+    font-weight: normal;
+}
+
+.dropdown-menu a:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-menu a::after {
+    display: none; 
+}
+
+.dropdown-divider {
+    border: none;
+    border-top: 1px solid #eee;
+    margin: 5px 0;
+}
+
+.text-danger {
+    color: var(--danger-color) !important;
+}
+
+.user-avatar-btn {
+    font-size: 1.3rem; 
+    font-weight: 600;  
+    text-transform: uppercase; 
+    color: #fff; 
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+
+.user-avatar-btn i {
+    font-size: 1.4rem; 
+}
+
+/* ==========================================================================
+	MAGIA RESPONSIVA (Celulares y Tablets)
+   ========================================================================== */
+@media (max-width: 768px) {
+    .content-banner h2 {
+        font-size: 3rem;
+    }
+    .heading-1 {
+        font-size: 2.5rem;
+    }
+
+    .navbar {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .menu {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .remito-table-container {
+        overflow-x: auto; 
+        display: block;
+        width: 100%;
+    }
+
+    .copyright {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
 }
