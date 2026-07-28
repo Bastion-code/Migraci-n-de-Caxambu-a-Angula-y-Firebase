@@ -50,7 +50,7 @@
               <span>${{ carrito().reduce((acc, item) => acc + (item.producto.precio * item.cantidad), 0) }}</span>
             </div>
 
-            <button (click)="finalizarCompra()" style="width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.5rem; font-weight: 600; cursor: pointer; text-transform: uppercase;">
+            <button (click)="abrirPago()" style="width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.5rem; font-weight: 600; cursor: pointer; text-transform: uppercase;">
               Realizar Pedido
             </button>
             <p style="font-size: 1.1rem; color: #888; margin-top: 1rem; text-align: center;">Quedará pendiente hasta la confirmación del vendedor.</p>
@@ -111,4 +111,50 @@
 
     </div>
   </div>
+  @if (mostrarPago()) {
+  <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 2000;">
+    <div style="background: white; border-radius: 12px; padding: 3rem; width: 90%; max-width: 450px;">
+
+      @if (!procesandoPago()) {
+        <h2 style="font-size: 2rem; color: var(--dark-color); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+          <i class="fa-solid fa-credit-card"></i> Datos de Pago
+        </h2>
+
+        @if (errorPago()) {
+          <p style="color: var(--danger-color); font-size: 1.3rem; margin-bottom: 1.5rem;">{{ errorPago() }}</p>
+        }
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #666;">Número de tarjeta</label>
+          <input type="text" [(ngModel)]="numeroTarjeta" placeholder="1234 5678 9012 3456" maxlength="19" style="width: 100%; padding: 1rem; font-size: 1.4rem; border: 1px solid #ccc; border-radius: 6px;">
+        </div>
+
+        <div style="display: flex; gap: 1.5rem; margin-bottom: 2rem;">
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #666;">Vencimiento</label>
+            <input type="text" [(ngModel)]="vencimiento" placeholder="MM/AA" maxlength="5" style="width: 100%; padding: 1rem; font-size: 1.4rem; border: 1px solid #ccc; border-radius: 6px;">
+          </div>
+          <div style="flex: 1;">
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #666;">CVV</label>
+            <input type="text" [(ngModel)]="cvv" placeholder="123" maxlength="3" style="width: 100%; padding: 1rem; font-size: 1.4rem; border: 1px solid #ccc; border-radius: 6px;">
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem;">
+          <button (click)="cerrarPago()" style="flex: 1; background: #eee; color: #333; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.4rem; cursor: pointer;">
+            Cancelar
+          </button>
+          <button (click)="confirmarPago()" style="flex: 1; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.4rem; font-weight: 600; cursor: pointer;">
+            Pagar
+          </button>
+        </div>
+      } @else {
+        <div style="text-align: center; padding: 2rem 0;">
+          <p style="font-size: 1.8rem; color: var(--dark-color);">Procesando pago...</p>
+        </div>
+      }
+
+    </div>
+  </div>
+}
 </main>
