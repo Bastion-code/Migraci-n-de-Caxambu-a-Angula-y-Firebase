@@ -120,7 +120,7 @@ body.dark-mode input[type="number"] {
     border-color: #777;
 }
 
-/* Botones de acción en la tabla (Stock y Precio) */
+/* Botones de acción en la tabla (Stock, Precio y Eliminar) */
 .btn-sm {
     background-color: var(--dark-color);
     color: #fff;
@@ -135,7 +135,7 @@ body.dark-mode input[type="number"] {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    margin: 0 0.2rem;
+    margin: 0 0.4rem;
 }
 
 .btn-sm:hover {
@@ -155,6 +155,14 @@ body.dark-mode .btn-sm {
 
 .confirm-action:hover {
     background-color: #218838; 
+}
+
+.delete-action {
+    background-color: var(--danger-color);
+}
+
+.delete-action:hover {
+    background-color: #c82333;
 }
 
 
@@ -259,7 +267,7 @@ body.dark-mode .order-card p {
 
 
 /*==========================================================*/
-/* 6. ESTILOS DE DETALLE DE PEDIDO */
+/* 6. ESTILOS DE DETALLE DE PEDIDO Y NUEVA FILA */
 /*==========================================================*/
 
 .order-details-summary {
@@ -290,4 +298,32 @@ body.dark-mode .order-details-summary {
   padding: 1.5rem;
   border-radius: 8px;
   margin-bottom: 1.5rem;
+}
+
+.fila-nuevo-producto {
+  background-color: #fffdf5;
+  border-top: 2px dashed var(--primary-color-dark);
+}
+
+.input-nuevo-nombre {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1.3rem;
+  outline: none;
+  background-color: #fff;
+}
+
+.input-nuevo-nombre:focus {
+  border-color: var(--primary-color-dark);
+  box-shadow: 0 0 6px rgba(181, 144, 111, 0.4);
+}
+
+.acciones-celda {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box;
 }

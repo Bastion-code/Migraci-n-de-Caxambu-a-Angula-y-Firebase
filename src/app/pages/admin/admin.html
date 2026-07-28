@@ -28,9 +28,12 @@
                   <td>
                     <input type="number" [(ngModel)]="prod.precio" min="0" class="price-input" />
                   </td>
-                  <td>
+                  <td class="acciones-celda">
                     <button class="btn-sm confirm-action" (click)="guardarProducto(prod)" title="Guardar cambios">
                       <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="btn-sm delete-action" (click)="eliminarProducto(prod.id)" title="Eliminar producto">
+                      <i class="fa-solid fa-trash-can"></i>
                     </button>
                   </td>
                 </tr>
@@ -39,6 +42,24 @@
                   <td colspan="4" style="text-align: center;">No hay productos cargados en el inventario.</td>
                 </tr>
               }
+
+              <!-- NUEVA FILA PARA AGREGAR PRODUCTO -->
+              <tr class="fila-nuevo-producto">
+                <td>
+                  <input type="text" [(ngModel)]="nuevoNombre" placeholder="Nombre del nuevo producto..." class="input-nuevo-nombre" />
+                </td>
+                <td>
+                  <input type="number" [(ngModel)]="nuevoStock" min="0" class="stock-input" />
+                </td>
+                <td>
+                  <input type="number" [(ngModel)]="nuevoPrecio" min="0" class="price-input" />
+                </td>
+                <td style="text-align: center;">
+                  <button class="btn-sm confirm-action" (click)="agregarNuevoProducto()" title="Agregar producto">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </td>
+              </tr>
             </tbody>
           </table>
         </div>

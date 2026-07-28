@@ -27,8 +27,12 @@ export class AdminComponent implements OnInit {
   productos = signal<Producto[]>([]);
   pedidos = signal<any[]>([]);
 
+  // Variables para la nueva fila de inventario
+  nuevoNombre: string = '';
+  nuevoStock: number = 0;
+  nuevoPrecio: number = 0;
+
   ngOnInit() {
-    // Como la ruta ya está protegida y se llega desde el login de Mariano, cargamos los datos directo
     this.cargarDatosAdmin();
   }
 
@@ -62,6 +66,31 @@ export class AdminComponent implements OnInit {
     }
   }
 
+  async agregarNuevoProducto() {
+    if (!this.nuevoNombre || this.nuevoPrecio <= 0) {
+      alert('Por favor, ingresá al menos el nombre y un precio válido para el nuevo producto.');
+      return;
+    }
+
+    try {
+      await this.productoService.crearProducto({
+        nombre: this.nuevoNombre,
+        stock: this.nuevoStock,
+        precio: this.nuevoPrecio
+      } as any);
+
+      alert('¡Producto agregado con éxito al inventario!');
+      
+      // Limpiamos los campos de la fila inferior
+      this.nuevoNombre = '';
+      this.nuevoStock = 0;
+      this.nuevoPrecio = 0;
+    } catch (error) {
+      console.error('Error al agregar el producto:', error);
+      alert('Hubo un error al intentar agregar el producto.');
+    }
+  }
+
   async cambiarEstadoPedido(pedidoId: string, nuevoEstado: string) {
     try {
       const pedidoRef = doc(this.firestore, 'pedidos', pedidoId);
@@ -71,4 +100,20 @@ export class AdminComponent implements OnInit {
       alert('No se pudo actualizar el estado del pedido.');
     }
   }
+
+  async eliminarProducto(id: string | undefined) {
+    if (!id) return;
+    
+    const confirmar = confirm('¿Estás seguro de que querés eliminar este producto de la tienda?');
+    if (!confirmar) return;
+
+    try {
+      await this.productoService.eliminarProducto(id);
+      alert('¡Producto eliminado con éxito!');
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+      alert('Hubo un error al intentar eliminar el producto.');
+    }
+  }
+  
 }

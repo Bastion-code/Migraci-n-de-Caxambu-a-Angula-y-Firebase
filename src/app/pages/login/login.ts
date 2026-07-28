@@ -20,7 +20,6 @@ export class LoginComponent {
   pass: string = '';
   errorMessage: string = '';
 
-  // Esta es la función que tu login.html está buscando con el (ngSubmit)="onSubmit()"
   onSubmit() {
     this.iniciarSesion();
   }
@@ -35,7 +34,8 @@ export class LoginComponent {
         this.router.navigate(['/tienda']);
       }
     } catch (error: any) {
-      console.error('Error al iniciar sesión:', error);
+      console.error('Código de error de Firebase:', error.code);
+      console.error('Mensaje completo:', error.message);
       this.errorMessage = 'Correo o contraseña incorrectos. Por favor, verificá tus datos.';
     }
   }
