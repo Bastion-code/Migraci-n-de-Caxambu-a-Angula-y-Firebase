@@ -1,0 +1,40 @@
+<main class="main-content">
+  <div class="container">
+    <h1 class="heading-1">Recetas de Café</h1>
+
+    <input
+      [formControl]="searchControl"
+      type="text"
+      placeholder="Buscar por nombre o ingrediente (ej: espresso, leche)..."
+      style="width: 100%; padding: 1.2rem; margin-bottom: 3rem; font-size: 1.5rem; border: 2px solid var(--primary-color); border-radius: 0.8rem;"
+    >
+
+    @if (cargando) {
+      <p style="text-align: center; font-size: 1.6rem;">Cargando recetas...</p>
+    }
+
+    @if (error) {
+      <p style="text-align: center; font-size: 1.6rem; color: var(--danger-color);">
+        No se pudo conectar con la API de recetas. Intentá de nuevo más tarde.
+      </p>
+    }
+
+    @if (!cargando && !error) {
+      <div class="container-products">
+        @for (coffee of filteredCoffees; track coffee.id) {
+          <div class="card-product">
+            <div class="container-img">
+              <img [src]="coffee.image" [alt]="coffee.title" (error)="onImageError($event)" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+            <div class="content-card-product">
+              <h3>{{ coffee.title }}</h3>
+              <p style="color: #888; font-size: 1.3rem;">{{ coffee.ingredients?.join(', ') }}</p>
+            </div>
+          </div>
+        } @empty {
+          <p style="grid-column: 1 / -1; text-align: center; font-size: 1.6rem;">No se encontraron recetas con esa búsqueda.</p>
+        }
+      </div>
+    }
+  </div>
+</main>

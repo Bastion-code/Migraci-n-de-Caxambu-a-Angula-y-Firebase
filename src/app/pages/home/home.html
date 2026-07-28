@@ -59,40 +59,20 @@
   </section>
 
   <section class="container blogs">
-    <h1 class="heading-1">Últimos Blogs</h1>
-    <div class="container-blogs">
+  <h1 class="heading-1">Recetas de Café</h1>
+  <div class="container-blogs">
+    @for (receta of recetasPreview; track receta.id) {
       <div class="card-blog">
         <div class="container-img-blog">
-          <img src="/assets/img/blog-1.jpg" alt="Imagen Blog 1" />
+          <img [src]="receta.image" [alt]="receta.title" (error)="onImageError($event)" />
         </div>
         <div class="content-blog">
-          <h3>Como preparar el cafe perfecto en casa.</h3>
-          <p>Tips para usar la cafetera italiana, prensa francesa, etc.</p>
-          <a href="#" class="btn-read-more">Leer más</a>
+          <h3>{{ receta.title }}</h3>
+          <p>{{ receta.ingredients?.join(', ') }}</p>
+          <a routerLink="/recetas" class="btn-read-more">Ver todas las recetas</a>
         </div>
       </div>
-
-      <div class="card-blog">
-        <div class="container-img-blog">
-          <img src="/assets/img/blog-2.jpg" alt="Imagen Blog 2" />
-        </div>
-        <div class="content-blog">
-          <h3>El viaje del grano: del campo a tu taza.</h3>
-          <p>Como seleccionan los cafes de Brasil o Colombia.</p>
-          <a href="#" class="btn-read-more">Leer más</a>
-        </div>
-      </div>
-
-      <div class="card-blog">
-        <div class="container-img-blog">
-          <img src="/assets/img/blog-3.jpg" alt="Imagen Blog 3" />
-        </div>
-        <div class="content-blog">
-          <h3>Diferencias entre café Arábica y Robusta.</h3>
-          <p>Guia rapida para el cliente.</p>
-          <a href="#" class="btn-read-more">Leer más</a>
-        </div>
-      </div>
-    </div>
-  </section>
+    }
+  </div>
+</section>
 </main>
