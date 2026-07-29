@@ -1,0 +1,78 @@
+<main class="main-content">
+  <section class="banner">
+    <div class="content-banner">
+      <p>Café recién tostado</p>
+      <h2>Colección de la <br />semana del <span>2026</span></h2>
+    </div>
+  </section>
+
+  <section class="container">
+    <div class="container-features">
+      <div class="card-feature">
+        <div class="feature-content">
+          <span>Café de Origen seleccionado.</span>
+          <p>Trabajamos directamente con productores para llevarte el mejor grano.</p>
+        </div>
+      </div>
+      <div class="card-feature">
+        <div class="feature-content">
+          <span>Calidad Garantizada.</span>
+          <p>Si el café no cumple tus expectativas, te lo cambiamos sin vueltas.</p>
+        </div>
+      </div>
+      <div class="card-feature">
+        <div class="feature-content">
+          <span>Atención personalizada.</span>
+          <p>Consultanos por WhatsApp y armamos tu pedido a medida.</p>
+        </div>
+      </div>
+      <div class="card-feature">
+        <div class="feature-content">
+          <span>Frescura Asegurada.</span>
+          <p>Tostamos semanalmente para que el aroma llegue intacto a tu taza.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="container top-products">
+    <h1 class="heading-1">Los Mejores Productos</h1>
+   
+    <div class="container-products" id="catalogo-index">
+      
+      @for (producto of productos; track producto.id) {
+        <div class="card-product">
+          <div class="container-img">
+            <img [src]="obtenerImagenProducto(producto.nombre)" [alt]="producto.nombre" />
+          </div>
+          <div class="content-card-product">
+            <h3>{{ producto.nombre }}</h3>
+            <span class="add-cart">
+              <i class="fa-solid fa-basket-shopping"></i>
+            </span>
+            <p class="price">${{ producto.precio }}</p>
+          </div>
+        </div>
+      }
+
+    </div>
+  </section>
+
+  <section class="container blogs">
+  <h1 class="heading-1">Recetas de Café</h1>
+  <div class="container-blogs">
+    @for (receta of recetasPreview; track receta.id) {
+      <div class="card-blog">
+        <div class="container-img-blog">
+          <img [src]="receta.image" [alt]="receta.title" (error)="onImageError($event)" />
+        </div>
+        <div class="content-blog">
+          <h3>{{ receta.title }}</h3>
+          <p>{{ receta.ingredients?.join(', ') }}</p>
+          <a routerLink="/recetas" class="btn-read-more">Ver todas las recetas</a>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+</main>

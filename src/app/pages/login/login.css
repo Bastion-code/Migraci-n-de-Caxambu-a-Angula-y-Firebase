@@ -1,0 +1,113 @@
+/* ------------------------------------------- */
+/* Estilos principales del formulario de login */
+/* ------------------------------------------- */
+.main-content.login-page {
+    /* Centra el formulario vertical y horizontalmente */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* Mínimo de altura para que se vea bien centrado en la pantalla */
+    min-height: 80vh; 
+    padding: 4rem 0;
+    background-color: var(--background-color); /* Utiliza el color de fondo global */
+}
+
+.container-login {
+    background-color: #fff;
+    padding: 4rem 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 40rem; /* Ancho máximo para el formulario */
+    text-align: center;
+}
+
+.container-login h2 {
+    font-size: 3rem;
+    margin-bottom: 2.5rem;
+    color: var(--dark-color); /* Color de texto principal */
+}
+
+.form-group {
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.8rem;
+    font-size: 1.6rem;
+    color: var(--light-color); /* Color para las etiquetas */
+}
+
+.form-group input {
+    width: 100%;
+    padding: 1.2rem;
+    font-size: 1.6rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color-dark); /* Borde al enfocarse */
+}
+
+.form-options {
+    text-align: right;
+    margin-bottom: 2rem;
+    font-size: 1.4rem;
+}
+
+.form-options a {
+    color: var(--dark-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.form-options a:hover {
+    color: var(--primary-color);
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 1.5rem;
+    background-color: var(--primary-color);
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 1.8rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    text-transform: uppercase;
+}
+
+.btn-submit:hover {
+    background-color: var(--primary-color-dark);
+}
+
+.register-link {
+    margin-top: 2rem;
+    font-size: 1.4rem;
+}
+
+.register-link a {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.error-message {
+    background-color: var(--danger-color);
+    color: #fff;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+    font-size: 1.4rem;
+    font-weight: 500;
+    text-align: center;
+}
+

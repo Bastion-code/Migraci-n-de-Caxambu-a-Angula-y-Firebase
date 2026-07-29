@@ -1,0 +1,127 @@
+@if (showNavigation()) {
+  <header>
+    <div class="container-navbar">
+      <nav class="navbar container">
+        <div class="container-logo">
+          <img src="/assets/img/Caligrafia-caxambu.png" alt="Logo Caxambu" />
+        </div>
+
+        <ul class="menu">
+          <li><a routerLink="/">Inicio</a></li>
+          <li><a routerLink="/tienda">Tienda</a></li>
+          <li><a routerLink="/soporte">Soporte</a></li>
+
+          <li id="nav-cart" style="display: none">
+            <a href="#" id="cart-icon">
+              <i class="fa-solid fa-cart-shopping"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+
+          @if (!currentUser()) {
+            <li id="nav-login">
+              <a routerLink="/login"><i class="fa-regular fa-user"></i> Acceder</a>
+            </li>
+          }
+
+          @if (currentUser()) {
+            <li id="nav-user" class="user-menu-container">
+              <div class="user-avatar-btn" id="avatar-btn" (click)="toggleDropdown()" style="cursor: pointer;">
+                <i class="fa-regular fa-user"></i>
+                <span id="nav-user-name">{{ currentUser()?.displayName || currentUser()?.email }}</span>
+                <i class="fa-solid fa-chevron-down arrow-down"></i>
+              </div>
+              
+              @if (dropdownOpen()) {
+                <ul class="dropdown-menu" id="dropdown-menu" style="display: block; position: absolute; z-index: 1000;">
+                  <li class="dropdown-header">
+                    <span id="drop-name" class="drop-title">Hola, {{ currentUser()?.displayName || 'Usuario' }}</span>
+                    <span id="drop-email" class="drop-subtitle">{{ currentUser()?.email }}</span>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a routerLink="/perfil" (click)="toggleDropdown()"><i class="fa-regular fa-user"></i> Mi Perfil</a>
+                  </li>
+                  <li>
+                    <a routerLink="/tienda" (click)="toggleDropdown()"><i class="fa-solid fa-bag-shopping"></i> Mis Compras</a>
+                  </li>
+                  <li>
+                    <a href="#" (click)="toggleDropdown()"><i class="fa-regular fa-heart"></i> Favoritos</a>
+                  </li>
+                  <li><hr class="dropdown-divider" /></li>
+                  <li>
+                    <a href="#" id="btn-cerrar-sesion" class="text-danger" (click)="cerrarSesion()">
+                      <i class="fa-solid fa-arrow-right-from-bracket"></i> Cerrar Sesión
+                    </a>
+                  </li>
+                </ul>
+              }
+            </li>
+          }
+        </ul>
+      </nav>
+    </div>
+  </header>
+}
+
+<router-outlet></router-outlet>
+
+@if (showNavigation()) {
+  <footer class="container-footer">
+    <div class="container footer">
+      <div class="contact">
+        <p class="title-footer">Información de Contacto</p>
+        <ul>
+          <li>Dirección: 05, Calle Principal, Mendoza, 5570, Argentina</li>
+          <li>Número de teléfono: 2634362734</li>
+          <li>Correo electrónico: caxambu@baristas.com</li>
+        </ul>
+        <div class="social-icons">
+          <span class="facebook"><i class="fa-brands fa-facebook-f"></i></span>
+          <span class="twitter"><i class="fa-brands fa-twitter"></i></span>
+          <span class="youtube"><i class="fa-brands fa-youtube"></i></span>
+          <span class="pinterest"><i class="fa-brands fa-pinterest-p"></i></span>
+          <span class="instagram"><i class="fa-brands fa-instagram"></i></span>
+        </div>
+      </div>
+
+      <div class="information">
+        <p class="title-footer">Información</p>
+        <ul>
+          <li><a href="#">Acerca de Nosotros</a></li>
+          <li><a href="#">Información Delivery</a></li>
+          <li><a href="#">Politicas de Privacidad</a></li>
+          <li><a href="#">Términos y condiciones</a></li>
+          <li><a href="#">Contactános</a></li>
+        </ul>
+      </div>
+
+      <div class="my-account">
+        <p class="title-footer">Mi cuenta</p>
+        <ul>
+          <li><a href="#">Mi cuenta</a></li>
+          <li><a href="#">Historial de ordenes</a></li>
+          <li><a href="#">Lista de deseos</a></li>
+          <li><a href="#">Boletín</a></li>
+        </ul>
+      </div>
+
+      <div class="newsletter">
+        <p class="title-footer">Boletín informativo</p>
+        <div class="content">
+          <p>
+            Suscríbete a nuestros boletines ahora y mantente al día con nuevas
+            colecciones y ofertas exclusivas.
+          </p>
+          <input type="email" placeholder="Ingresa el correo aquí..." />
+          <button>Suscríbete</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="copyright">
+      <p>Desarrollado por Programación nefasta &copy; 2024</p>
+      <img src="/assets/img/payment.png" alt="Pagos" />
+    </div>
+  </footer>
+}

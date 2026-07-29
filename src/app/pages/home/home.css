@@ -1,0 +1,74 @@
+/* Estilos para el modo oscuro en la página de inicio */
+body.dark-mode {
+    background-color: var(--dark-color);
+    color: #fff;
+}
+
+body.dark-mode .container.hero {
+    background-color: var(--dark-color);
+}
+
+body.dark-mode .container-navbar {
+    background-color: #222;
+}
+
+body.dark-mode .container-navbar a {
+    color: #fff;
+}
+
+body.dark-mode .search-form input {
+    background-color: #333;
+    color: #fff;
+}
+
+body.dark-mode .container-features,
+body.dark-mode .top-categories,
+body.dark-mode .top-products,
+body.dark-mode .blogs,
+body.dark-mode .specials {
+    background-color: var(--dark-color);
+}
+
+body.dark-mode .card-feature,
+body.dark-mode .card-product,
+body.dark-mode .card-category,
+body.dark-mode .card-blog {
+    background-color: #2a2a2a;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.dark-mode .card-feature i,
+body.dark-mode .card-product i,
+body.dark-mode .card-category p,
+body.dark-mode .card-blog h3,
+body.dark-mode .card-blog p {
+    color: #fff;
+}
+
+body.dark-mode .card-feature span,
+body.dark-mode .card-product h3,
+body.dark-mode .card-blog span {
+    color: #eee;
+}
+
+body.dark-mode .card-category span {
+    color: var(--primary-color);
+}
+
+body.dark-mode .button-group span i {
+    background-color: #444;
+    color: #fff;
+}
+
+body.dark-mode .button-group-blog span i {
+    background-color: #444;
+    color: #fff;
+}
+
+body.dark-mode .price {
+    color: #fff;
+}
+
+body.dark-mode .price span {
+    color: #aaa;
+}

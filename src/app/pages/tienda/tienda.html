@@ -1,0 +1,225 @@
+<main class="main-content">
+  <div class="container">
+    <h1 class="heading-1">Tienda de Cafés Caxambu</h1>
+
+    <div class="tienda-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
+      
+      <div class="container-products">
+        @for (producto of productos(); track producto.id) {
+          <div class="card-product">
+            <div class="container-img">
+              <img [src]="obtenerImagenProducto(producto.nombre)" [alt]="producto.nombre" />
+            </div>
+            <div class="content-card-product">
+              <h3>{{ producto.nombre }}</h3>
+              <p class="price">${{ producto.precio }}</p>
+              
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem;">
+                
+                <button (click)="verResenas(producto.id!)" style="background: none; border: 1px solid var(--primary-color); color: var(--primary-color); padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 1.2rem; transition: all 0.3s;">
+                  <i class="fa-solid fa-star"></i> Reseñas
+                </button>
+
+                <div class="add-cart" (click)="agregarAlCarrito(producto)" title="Agregar al carrito">
+                  <i class="fa-solid fa-basket-shopping"></i>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        } @empty {
+          <p style="grid-column: 1 / -1; font-size: 1.6rem; color: var(--light-color);">Cargando productos del catálogo o no hay stock disponible...</p>
+        }
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        
+        <div class="carrito-sidebar" style="background: #fff; padding: 2.5rem; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee;">
+          <h2 style="font-size: 2rem; color: var(--dark-color); margin-bottom: 2rem; display: flex; align-items: center; gap: 1rem;">
+            <i class="fa-solid fa-cart-shopping"></i> Tu Carrito
+          </h2>
+
+          @if (carrito().length === 0) {
+            <p style="font-size: 1.4rem; color: #777;">El carrito está vacío.</p>
+          } @else {
+            <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
+              @for (item of carrito(); track item.producto.id) {
+                <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 1.4rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 0.8rem;">
+                  <span>{{ item.producto.nombre }} (x{{ item.cantidad }})</span>
+                  <span style="font-weight: 600; color: var(--primary-color);">${{ item.producto.precio * item.cantidad }}</span>
+                </li>
+              }
+            </ul>
+
+            <div style="border-top: 2px solid #eee; padding-top: 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; font-size: 1.8rem; font-weight: bold; color: var(--dark-color);">
+              <span>Total:</span>
+              <span>${{ carrito().reduce((acc, item) => acc + (item.producto.precio * item.cantidad), 0) }}</span>
+            </div>
+
+            <button (click)="abrirPago()" style="width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.5rem; font-weight: 600; cursor: pointer; text-transform: uppercase;">
+              Realizar Pedido
+            </button>
+            <p style="font-size: 1.1rem; color: #888; margin-top: 1rem; text-align: center;">Quedará pendiente hasta la confirmación del vendedor.</p>
+          }
+        </div>
+
+        <div style="background: #fff; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid #eee; overflow: hidden;">
+          <div (click)="toggleHistorial()" style="padding: 2rem; background-color: var(--primary-color); color: white; display: flex; justify-content: space-between; align-items: center; cursor: pointer;">
+            <h3 style="font-size: 1.6rem; margin: 0; display: flex; align-items: center; gap: 1rem;">
+              <i class="fa-solid fa-clock-rotate-left"></i> Historial de Pedidos
+            </h3>
+            <i class="fa-solid" [ngClass]="historialAbierto() ? 'fa-chevron-up' : 'fa-chevron-down'"></i>
+          </div>
+
+          @if (historialAbierto()) {
+            <div style="padding: 2rem; max-height: 300px; overflow-y: auto;">
+              @if (historialPedidos().length === 0) {
+                <p style="font-size: 1.3rem; color: #777; text-align: center; margin: 0;">No tenés pedidos registrados.</p>
+              } @else {
+                <ul style="list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 1.5rem;">
+                  @for (pedido of historialPedidos(); track pedido.id) {
+                    <li style="border: 1px solid #eee; padding: 1.4rem; border-radius: 8px; font-size: 1.3rem; background: #fafafa;">
+                      
+                      <div style="display: flex; justify-content: space-between; margin-bottom: 0.4rem; font-weight: bold; border-bottom: 1px dashed #ddd; padding-bottom: 0.6rem;">
+                        <span style="color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden sin ID' }}</span>
+                        <span [style.color]="pedido.estado === 'confirmado' ? 'green' : (pedido.estado === 'cancelado' ? 'red' : 'orange')" style="text-transform: uppercase; font-size: 1.1rem;">
+                          {{ pedido.estado }}
+                        </span>
+                      </div>
+                      
+                      <div style="font-size: 1.1rem; color: #888; margin-bottom: 0.8rem;">
+                        <i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}
+                      </div>
+
+                      <div style="color: #666; font-size: 1.2rem; margin-bottom: 0.8rem;">
+                        @for (it of pedido.items; track it.producto.id) {
+                          <div>• {{ it.producto.nombre }} (x{{ it.cantidad }})</div>
+                        }
+                      </div>
+
+                      <div style="text-align: right; font-weight: bold; font-size: 1.3rem; color: var(--dark-color);">
+                        Total: ${{ pedido.total }}
+                      </div>
+                    </li>
+                  }
+                </ul>
+              }
+            </div>
+          }
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  @if (productoSeleccionadoId()) {
+    <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+      
+      <div class="modal-content" style="background: white; padding: 3rem; border-radius: 12px; max-width: 600px; width: 90%; max-height: 85vh; overflow-y: auto; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; border-bottom: 1px solid #eee; padding-bottom: 1.5rem;">
+          <h2 style="font-size: 2.2rem; margin: 0; color: var(--dark-color);">Reseñas del Producto</h2>
+          <button (click)="productoSeleccionadoId.set(null)" style="background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #888;">&times;</button>
+        </div>
+
+        <div class="reviews-list" style="margin-bottom: 3rem;">
+          @if (resenasActuales().length === 0) {
+            <div style="text-align: center; padding: 2rem 0; color: #777;">
+              <i class="fa-regular fa-comment-dots" style="font-size: 3rem; margin-bottom: 1rem; color: #ccc;"></i>
+              <p style="font-size: 1.5rem; margin: 0;">Aún no hay reseñas para este producto.</p>
+              <p style="font-size: 1.3rem;">¡Sé el primero en opinar!</p>
+            </div>
+          } @else {
+            @for (resena of resenasActuales(); track resena.id) {
+              <div class="review-item" style="border-bottom: 1px solid #f0f0f0; padding-bottom: 1.5rem; margin-bottom: 1.5rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                  <span style="font-weight: 600; font-size: 1.4rem; color: var(--dark-color);">
+                    <i class="fa-solid fa-user-circle" style="color: #ccc; margin-right: 0.5rem;"></i>
+                    {{ resena.usuarioEmail }}
+                  </span>
+                  
+                  <span style="font-size: 1.3rem;">
+                    @for (star of [1,2,3,4,5]; track star) {
+                      <i class="fa-solid fa-star" [style.color]="star <= resena.calificacion ? '#FFD700' : '#e0e0e0'"></i>
+                    }
+                  </span>
+                </div>
+                <p style="font-size: 1.4rem; color: #555; margin: 0 0 0.8rem 0; line-height: 1.5;">"{{ resena.comentario }}"</p>
+                <small style="color: #aaa; font-size: 1.1rem;">Publicado el {{ resena.fechaHora }}</small>
+              </div>
+            }
+          }
+        </div>
+
+        <div class="review-form" style="background: #f8f9fa; padding: 2rem; border-radius: 8px; border: 1px solid #eee;">
+          <h3 style="font-size: 1.6rem; margin-top: 0; margin-bottom: 1.5rem; color: var(--dark-color);">Dejar una reseña</h3>
+          
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555; font-weight: bold;">Calificación:</label>
+            <select [ngModel]="nuevaCalificacion()" (ngModelChange)="nuevaCalificacion.set($event)" style="width: 100%; padding: 1rem; border-radius: 6px; border: 1px solid #ddd; font-size: 1.4rem; background: white;">
+              <option [ngValue]="5">5 Estrellas - Excelente ⭐⭐⭐⭐⭐</option>
+              <option [ngValue]="4">4 Estrellas - Muy Bueno ⭐⭐⭐⭐</option>
+              <option [ngValue]="3">3 Estrellas - Bueno ⭐⭐⭐</option>
+              <option [ngValue]="2">2 Estrellas - Regular ⭐⭐</option>
+              <option [ngValue]="1">1 Estrella - Malo ⭐</option>
+            </select>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555; font-weight: bold;">Comentario:</label>
+            <textarea [ngModel]="nuevoComentario()" (ngModelChange)="nuevoComentario.set($event)" rows="3" style="width: 100%; padding: 1rem; border-radius: 6px; border: 1px solid #ddd; font-size: 1.4rem; resize: vertical; font-family: inherit;" placeholder="¿Qué te pareció el café?"></textarea>
+          </div>
+
+          <button (click)="enviarResena()" style="width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.5rem; cursor: pointer; font-weight: bold; text-transform: uppercase; transition: background 0.3s;">
+            Publicar Reseña
+          </button>
+        </div>
+      </div>
+    </div>
+  }
+
+  @if (mostrarPago()) {
+    <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;">
+      <div class="modal-content pago-modal" style="background: white; padding: 3rem; border-radius: 12px; width: 90%; max-width: 450px; position: relative;">
+        
+        <button (click)="cerrarPago()" style="position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #888;">&times;</button>
+        
+        <h2 style="font-size: 2rem; margin-bottom: 2rem; color: var(--dark-color); text-align: center;">
+          <i class="fa-regular fa-credit-card" style="margin-right: 0.5rem;"></i> Datos de Pago
+        </h2>
+
+        @if (errorPago()) {
+          <div style="background-color: #fee; color: #c00; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 1.3rem; text-align: center;">
+            {{ errorPago() }}
+          </div>
+        }
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555;">Número de Tarjeta</label>
+          <input type="text" [(ngModel)]="numeroTarjeta" placeholder="0000 0000 0000 0000" maxlength="19" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1.4rem;">
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
+          <div>
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555;">Vencimiento</label>
+            <input type="text" [(ngModel)]="vencimiento" placeholder="MM/AA" maxlength="5" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1.4rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555;">CVV</label>
+            <input type="password" [(ngModel)]="cvv" placeholder="123" maxlength="3" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1.4rem;">
+          </div>
+        </div>
+
+        <button (click)="confirmarPago()" [disabled]="procesandoPago()" style="width: 100%; background-color: #27ae60; color: white; border: none; padding: 1.4rem; border-radius: 6px; font-size: 1.6rem; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+          @if (procesandoPago()) {
+            Procesando... <i class="fa-solid fa-spinner fa-spin"></i>
+          } @else {
+            Confirmar Pago
+          }
+        </button>
+      </div>
+    </div>
+  }
+
+</main>

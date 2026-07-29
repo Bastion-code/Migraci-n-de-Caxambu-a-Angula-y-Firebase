@@ -1,0 +1,157 @@
+<main class="main-content vendedor-page">
+  <div class="container admin-dashboard">
+    <h2 class="heading-1">Panel de Vendedor</h2>
+
+    <!-- CONTENEDOR PRINCIPAL SUPERIOR (Inventario a la izquierda, Pedidos Pendientes a la derecha en 1/4) -->
+    <div class="top-admin-layout">
+             
+      <!-- Sección de Gestión de Productos (3 partes) -->
+      <section class="admin-section inventario-section">
+        <h3>Gestión de Inventario y Precios</h3>
+        <div style="overflow-x: auto;">
+          <table class="product-management-table">
+            <thead>
+              <tr>
+                <th>Producto</th>
+                <th>Stock</th>
+                <th>Precio Venta ($)</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (prod of productos(); track prod.id) {
+                <tr>
+                  <td>{{ prod.nombre }}</td>
+                  <td>
+                    <input type="number" [(ngModel)]="prod.stock" min="0" class="stock-input" />
+                  </td>
+                  <td>
+                    <input type="number" [(ngModel)]="prod.precio" min="0" class="price-input" />
+                  </td>
+                  <td class="acciones-celda">
+                    <button class="btn-sm confirm-action" (click)="guardarProducto(prod)" title="Guardar cambios">
+                      <i class="fa-solid fa-check"></i>
+                    </button>
+                    <button class="btn-sm delete-action" (click)="eliminarProducto(prod.id)" title="Eliminar producto">
+                      <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                  </td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="4" style="text-align: center;">No hay productos cargados en el inventario.</td>
+                </tr>
+              }
+
+              <!-- NUEVA FILA PARA AGREGAR PRODUCTO -->
+              <tr class="fila-nuevo-producto">
+                <td>
+                  <input type="text" [(ngModel)]="nuevoNombre" placeholder="Nombre del nuevo producto..." class="input-nuevo-nombre" />
+                </td>
+                <td>
+                  <input type="number" [(ngModel)]="nuevoStock" min="0" class="stock-input" />
+                </td>
+                <td>
+                  <input type="number" [(ngModel)]="nuevoPrecio" min="0" class="price-input" />
+                </td>
+                <td style="text-align: center;">
+                  <button class="btn-sm confirm-action" (click)="agregarNuevoProducto()" title="Agregar producto">
+                    <i class="fa-solid fa-plus"></i>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Pedidos Pendientes de Aprobación (1 parte a la derecha, en vertical) -->
+      <section class="admin-section pendientes-vertical-section">
+        <h3>Pedidos Pendientes</h3>
+        <div class="order-list-vertical">
+          @for (pedido of pedidos(); track pedido.id) {
+            @if (pedido.estado === 'pendiente' || pedido.estado === 'PENDIENTE') {
+              <div class="order-card pending-card-compact">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                  <h4 style="margin: 0; font-size: 1.2rem; color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden' }}</h4>
+                  <span style="color: orange; font-weight: bold; text-transform: uppercase; font-size: 0.9rem;">
+                    {{ pedido.estado }}
+                  </span>
+                </div>
+                 
+                <p style="font-size: 1.1rem; color: #666; margin: 0.2rem 0;"><strong>{{ pedido.clienteEmail }}</strong></p>
+                <p style="font-size: 1rem; color: #888; margin-bottom: 0.8rem;"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</p>
+                
+                <div class="order-details-summary" style="background: #fff; padding: 0.8rem; border-radius: 6px; border: 1px dashed #ddd; margin-bottom: 0.8rem;">
+                  <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.1rem;">
+                    @for (it of pedido.items; track it.producto?.id || it.idProducto) {
+                      <li style="display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid #f0f0f0;">
+                        <span>{{ it.producto?.nombre || it.nombre }} (x{{ it.cantidad }})</span>
+                        <span style="font-weight: 600;">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
+                      </li>
+                    }
+                  </ul>
+                  <div style="text-align: right; margin-top: 0.5rem; font-size: 1.2rem; font-weight: bold; color: var(--dark-color);">
+                    Total: ${{ pedido.total }}
+                  </div>
+                </div>
+
+                <!-- Botones de Acción -->
+                <div class="order-actions" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
+                  <button class="btn-approve" (click)="cambiarEstadoPedido(pedido.id, 'confirmado')" style="background: var(--success-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                    <i class="fa-solid fa-check"></i>
+                  </button>
+                  <button class="btn-deny" (click)="cambiarEstadoPedido(pedido.id, 'cancelado')" style="background: var(--danger-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
+                    <i class="fa-solid fa-xmark"></i>
+                  </button>
+                </div>
+              </div>
+            }
+          } @empty {
+            <div style="text-align: center; padding: 1.5rem; color: #666; border: 2px dashed #ccc; border-radius: 8px;">
+              <p style="font-size: 1.2rem; margin: 0;">No hay pedidos pendientes.</p>
+            </div>
+          }
+        </div>
+      </section>
+
+    </div>
+
+    <!-- SECCIÓN INFERIOR: Historial de Pedidos -->
+    <section class="admin-section historial-section" style="margin-top: 2rem;">
+      <h3>Historial de Pedidos</h3>
+      <div class="order-grid-horizontal" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
+        @for (pedido of pedidos(); track pedido.id) {
+          @if (pedido.estado !== 'pendiente' && pedido.estado !== 'PENDIENTE') {
+            <div class="order-card" [ngClass]="{'approved': pedido.estado === 'confirmado', 'denied': pedido.estado === 'cancelado'}">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+                <h4 style="margin: 0; color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden' }}</h4>
+                <span [style.color]="pedido.estado === 'confirmado' ? 'green' : 'red'" style="font-weight: bold; text-transform: uppercase; font-size: 1.1rem;">
+                  {{ pedido.estado }}
+                </span>
+              </div>
+              
+              <p style="font-size: 1.2rem; color: #666; margin: 0.3rem 0;">Cliente: <strong>{{ pedido.clienteEmail }}</strong></p>
+              <p style="font-size: 1.1rem; color: #888; margin-bottom: 1rem;"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</p>
+              
+              <div class="order-details-summary" style="background: #fff; padding: 1rem; border-radius: 6px; border: 1px dashed #ddd;">
+                <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.2rem;">
+                  @for (it of pedido.items; track it.producto?.id || it.idProducto) {
+                    <li style="display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0;">
+                      <span>{{ it.producto?.nombre || it.nombre }} (x{{ it.cantidad }})</span>
+                      <span style="font-weight: 600;">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
+                    </li>
+                  }
+                </ul>
+                <div style="text-align: right; margin-top: 0.8rem; font-size: 1.3rem; font-weight: bold; color: var(--dark-color);">
+                  Total: ${{ pedido.total }}
+                </div>
+              </div>
+            </div>
+          }
+        }
+      </div>
+    </section>
+
+  </div>
+</main>

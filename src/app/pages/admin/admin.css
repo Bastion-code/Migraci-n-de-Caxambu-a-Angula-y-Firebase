@@ -1,0 +1,329 @@
+/*==========================================================*/
+/* 1. IMPORTS Y VARIABLES */
+/*==========================================================*/
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --primary-color: #402723;
+    --primary-color-dark: #b5906f;
+    --background-color: #f9f5f0;
+    --dark-color: #402723;
+    --light-color: #888;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+}
+
+/*==========================================================*/
+/* 2. ESTILOS BASE DEL PANEL Y DARK MODE */
+/*==========================================================*/
+
+.main-content.vendedor-page {
+    padding: 4rem 0;
+    min-height: 100vh;
+}
+
+.heading-1 {
+    margin-bottom: 3rem;
+}
+
+.admin-section {
+    background-color: #fff;
+    padding: 3rem;
+    margin-bottom: 3rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.admin-section h3 {
+    font-size: 2.4rem;
+    margin-bottom: 2rem;
+    color: var(--dark-color);
+    text-align: center;
+}
+
+/* Estilos para el modo oscuro */
+body.dark-mode .vendedor-page {
+    background-color: #333;
+    color: #eee;
+}
+body.dark-mode .admin-section {
+    background-color: #444;
+}
+body.dark-mode .admin-section h3 {
+    color: var(--primary-color);
+}
+
+
+/*==========================================================*/
+/* 3. ESTILOS DE GESTIÓN DE PRODUCTOS (TABLA) */
+/*==========================================================*/
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 1.4rem;
+    text-align: left;
+}
+
+thead th {
+    background-color: var(--primary-color);
+    color: #fff;
+    padding: 1.5rem;
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+tbody tr:nth-child(even) {
+    background-color: #f0f0f0;
+}
+body.dark-mode tbody tr:nth-child(even) {
+    background-color: #383838;
+}
+
+td, th {
+    padding: 1.5rem;
+    border: 1px solid #ddd;
+}
+
+body.dark-mode table,
+body.dark-mode th,
+body.dark-mode td {
+    border-color: #555;
+    color: #eee;
+}
+
+input[type="number"] {
+    width: 8rem;
+    padding: 0.8rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1.4rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+input[type="number"]:focus {
+    border-color: var(--primary-color-dark);
+    box-shadow: 0 0 8px rgba(181, 144, 111, 0.4);
+    background-color: #fff;
+}
+
+.product-management-table tbody tr:hover {
+    background-color: rgba(64, 39, 35, 0.05) !important;
+}
+
+body.dark-mode input[type="number"] {
+    background-color: #555;
+    color: #fff;
+    border-color: #777;
+}
+
+/* Botones de acción en la tabla (Stock, Precio y Eliminar) */
+.btn-sm {
+    background-color: var(--dark-color);
+    color: #fff;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: background-color 0.3s ease;
+    width: 3rem;
+    height: 3rem;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 0.4rem;
+}
+
+.btn-sm:hover {
+    background-color: var(--primary-color);
+}
+
+.btn-sm i {
+    color: #fff;
+}
+body.dark-mode .btn-sm {
+    background-color: #666;
+}
+
+.confirm-action {
+    background-color: var(--success-color); 
+}
+
+.confirm-action:hover {
+    background-color: #218838; 
+}
+
+.delete-action {
+    background-color: var(--danger-color);
+}
+
+.delete-action:hover {
+    background-color: #c82333;
+}
+
+
+/*==========================================================*/
+/* 4. LAYOUT SUPERIOR: INVENTARIO (3/4) Y PENDIENTES (1/4) */
+/*==========================================================*/
+
+.top-admin-layout {
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (max-width: 1200px) {
+  .top-admin-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pending-card-compact {
+  border-left: 4px solid orange;
+  background: #fffdf9;
+  padding: 1.2rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+}
+
+
+/*==========================================================*/
+/* 5. ESTILOS DE PEDIDOS Y TARJETAS */
+/*==========================================================*/
+
+.order-list {
+    display: grid;
+    gap: 2rem;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+}
+
+.order-card {
+    background-color: #f8f8f8;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+body.dark-mode .order-card {
+    background-color: #555;
+}
+
+.order-card h4 {
+    font-size: 1.8rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+body.dark-mode .order-card h4 {
+    color: var(--primary-color-dark);
+}
+
+.order-card p {
+    font-size: 1.4rem;
+    margin-bottom: 0.5rem;
+}
+body.dark-mode .order-card p {
+    color: #eee;
+}
+
+.order-actions {
+    margin-top: 1rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn-approve, .btn-deny {
+    padding: 1rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 1.4rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.btn-approve {
+    background-color: var(--success-color);
+}
+.btn-approve:hover {
+    background-color: #218838;
+}
+
+.btn-deny {
+    background-color: var(--danger-color);
+}
+.btn-deny:hover {
+    background-color: #c82333;
+}
+
+
+/*==========================================================*/
+/* 6. ESTILOS DE DETALLE DE PEDIDO Y NUEVA FILA */
+/*==========================================================*/
+
+.order-details-summary {
+    background-color: #fff;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    margin-bottom: 1.5rem;
+    border-radius: 6px;
+    border: 1px dashed #ccc;
+    font-size: 1.4rem;
+}
+body.dark-mode .order-details-summary {
+    background-color: #444;
+    border: 1px dashed #888;
+}
+
+.order-card.approved {
+  border-left: 5px solid green;
+  background: #f4faf4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.order-card.denied {
+  border-left: 5px solid red;
+  background: #faf4f4;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+}
+
+.fila-nuevo-producto {
+  background-color: #fffdf5;
+  border-top: 2px dashed var(--primary-color-dark);
+}
+
+.input-nuevo-nombre {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1.3rem;
+  outline: none;
+  background-color: #fff;
+}
+
+.input-nuevo-nombre:focus {
+  border-color: var(--primary-color-dark);
+  box-shadow: 0 0 6px rgba(181, 144, 111, 0.4);
+}
+
+.acciones-celda {
+  display: flex !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  width: 100% !important;
+  box-sizing: border-box;
+}
