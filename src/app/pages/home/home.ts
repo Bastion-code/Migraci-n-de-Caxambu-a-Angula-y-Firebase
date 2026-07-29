@@ -51,4 +51,30 @@ export class Home implements OnInit {
 onImageError(event: Event) {
   (event.target as HTMLImageElement).src = '/assets/img/gallery1.jpg';
 }
+
+obtenerImagenProducto(nombre: string): string {
+  const nombreLower = nombre.toLowerCase();
+
+  if (nombreLower.includes('caxambu brasilero')) {
+    return 'assets/img/cafe-2.png';
+  } else if (nombreLower.includes('caxambu colombiano')) {
+    return 'assets/img/cafe-1.png';
+  } else if (nombreLower.includes('flor de brasil tostado')) {
+    return 'assets/img/Cafe-Blend.png';
+  } else if (nombreLower.includes('flor de brasil 85/15')) {
+    return 'assets/img/Cafe-Blend.png';
+  } else if (nombreLower.includes('azúcar') || nombreLower.includes('azucar')) {
+    return 'assets/img/Caja-Azucar.png';
+  } else if (nombreLower.includes('edulco')) {
+    return 'assets/img/Caja-Edulco.png';
+  } else if (nombreLower.includes('leche en polvo')) {
+    return 'assets/img/250g-colombiano-brasil.png';
+  } else if (nombreLower.includes('chocolate en polvo')) {
+    return 'assets/img/250g-colombiano-brasil.png';
+  } else if (nombreLower.includes('cafe con leche') || nombreLower.includes('café con leche')) {
+    return 'assets/img/cafe-1.png';
+  }
+
+  return 'assets/img/250g-colombiano-brasil.png';
+}
 }

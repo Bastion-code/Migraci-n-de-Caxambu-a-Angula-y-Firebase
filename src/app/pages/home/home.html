@@ -43,7 +43,7 @@
       @for (producto of productos; track producto.id) {
         <div class="card-product">
           <div class="container-img">
-            <img [src]="producto.imagen_url" [alt]="producto.nombre" />
+            <img [src]="obtenerImagenProducto(producto.nombre)" [alt]="producto.nombre" />
           </div>
           <div class="content-card-product">
             <h3>{{ producto.nombre }}</h3>

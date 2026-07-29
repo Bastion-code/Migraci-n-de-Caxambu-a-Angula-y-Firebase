@@ -6,7 +6,7 @@ import { ProductoService } from '../../services/producto.service';
 import { Producto } from '../../models/producto.model';
 import { Auth, onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRESTORE } from '../../app.config';
-import { collection, query, where, getDocs, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
 import jsPDF from 'jspdf';
 
 @Component({
@@ -24,12 +24,10 @@ export class Tienda implements OnInit {
   productos = signal<Producto[]>([]);
   carrito = signal<{ producto: Producto; cantidad: number }[]>([]);
   usuarioActual = signal<User | null>(null);
-  
-  // Historial de pedidos y estado de la ventana desplegable
+
   historialPedidos = signal<any[]>([]);
   historialAbierto = signal(false);
 
-  // ---  estado del checkout con pago simulado ---
   mostrarPago = signal(false);
   procesandoPago = signal(false);
   errorPago = signal('');
@@ -53,9 +51,9 @@ export class Tienda implements OnInit {
   cargarHistorial(email: string) {
     const pedidosRef = collection(this.firestore, 'pedidos');
     const q = query(pedidosRef, where('clienteEmail', '==', email));
-    
+
     onSnapshot(q, (snapshot) => {
-      const pedidos = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      const pedidos = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
       this.historialPedidos.set(pedidos);
     });
   }
@@ -124,10 +122,7 @@ export class Tienda implements OnInit {
     }
 
     this.procesandoPago.set(true);
-
-    // Simulamos el tiempo de procesamiento del pago
     await new Promise(resolve => setTimeout(resolve, 1500));
-
     this.procesandoPago.set(false);
     this.mostrarPago.set(false);
     await this.finalizarCompra();
@@ -150,9 +145,18 @@ export class Tienda implements OnInit {
       estado: 'pendiente'
     };
 
-
     try {
       await this.productoService.crearPedido(pedido);
+
+      // Descontamos el stock de cada producto comprado
+      for (let item of this.carrito()) {
+        if (item.producto.id) {
+          const productoRef = doc(this.firestore, 'productos', item.producto.id);
+          const nuevoStock = item.producto.stock - item.cantidad;
+          await updateDoc(productoRef, { stock: nuevoStock });
+        }
+      }
+
       this.generarComprobantePDF(pedido);
       alert('¡Pago aprobado! Tu pedido quedó a la espera de confirmación por el vendedor.');
       this.carrito.set([]);
@@ -166,40 +170,70 @@ export class Tienda implements OnInit {
   }
 
   generarComprobantePDF(pedido: any) {
-    const doc = new jsPDF();
+    const pdfDoc = new jsPDF();
 
-    doc.setFontSize(20);
-    doc.text('Café Caxambú', 20, 20);
-    doc.setFontSize(12);
-    doc.text('Comprobante de Compra', 20, 30);
+    pdfDoc.setFontSize(20);
+    pdfDoc.text('Café Caxambú', 20, 20);
+    pdfDoc.setFontSize(12);
+    pdfDoc.text('Comprobante de Compra', 20, 30);
 
-    doc.setFontSize(10);
-    doc.text(`Orden: ${pedido.numeroCompra}`, 20, 45);
-    doc.text(`Fecha: ${pedido.fechaHora}`, 20, 52);
-    doc.text(`Cliente: ${pedido.clienteEmail}`, 20, 59);
+    pdfDoc.setFontSize(10);
+    pdfDoc.text(`Orden: ${pedido.numeroCompra}`, 20, 45);
+    pdfDoc.text(`Fecha: ${pedido.fechaHora}`, 20, 52);
+    pdfDoc.text(`Cliente: ${pedido.clienteEmail}`, 20, 59);
 
     let y = 75;
-    doc.setFontSize(11);
-    doc.text('Producto', 20, y);
-    doc.text('Cant.', 120, y);
-    doc.text('Subtotal', 150, y);
+    pdfDoc.setFontSize(11);
+    pdfDoc.text('Producto', 20, y);
+    pdfDoc.text('Cant.', 120, y);
+    pdfDoc.text('Subtotal', 150, y);
     y += 5;
-    doc.line(20, y, 190, y);
+    pdfDoc.line(20, y, 190, y);
     y += 8;
 
     pedido.items.forEach((item: any) => {
-      doc.text(item.producto.nombre, 20, y);
-      doc.text(String(item.cantidad), 120, y);
-      doc.text(`$${item.producto.precio * item.cantidad}`, 150, y);
+      pdfDoc.text(item.producto.nombre, 20, y);
+      pdfDoc.text(String(item.cantidad), 120, y);
+      pdfDoc.text(`$${item.producto.precio * item.cantidad}`, 150, y);
       y += 8;
     });
 
     y += 5;
-    doc.line(20, y, 190, y);
+    pdfDoc.line(20, y, 190, y);
     y += 10;
-    doc.setFontSize(13);
-    doc.text(`Total: $${pedido.total}`, 20, y);
+    pdfDoc.setFontSize(13);
+    pdfDoc.text(`Total: $${pedido.total}`, 20, y);
 
-    doc.save(`comprobante-${pedido.numeroCompra}.pdf`);
+    pdfDoc.save(`comprobante-${pedido.numeroCompra}.pdf`);
+  }
+
+  // --- FUNCIÓN PARA GESTIONAR LAS IMÁGENES ---
+  obtenerImagenProducto(nombre: string, urlBaseDatos?: string): string {
+
+
+    const nombreLower = nombre.toLowerCase();
+
+    if (nombreLower.includes('caxambu brasilero')) {
+      return 'assets/img/cafe-2.png';
+    } else if (nombreLower.includes('caxambu colombiano')) {
+      return 'assets/img/cafe-1.png'; 
+    } else if (nombreLower.includes('flor de brasil tostado')) {
+      return 'assets/img/Cafe-Blend.png'; 
+    } else if (nombreLower.includes('flor de brasil 85/15')) {
+      return 'assets/img/Cafe-Blend.png'; 
+    } else if (nombreLower.includes('azúcar')  || nombreLower.includes('azucar')) {
+      return 'assets/img/Caja-Azucar.png'; 
+    } else if (nombreLower.includes('edulco')) {
+      return 'assets/img/Caja-Edulco.png'; 
+    } else if (nombreLower.includes('leche en polvo')) {
+      return 'assets/img/250g-colombiano-brasil.png'; 
+    } else if (nombreLower.includes('chocolate en polvo')) {
+      return 'assets/img/250g-colombiano-brasil.png'; 
+    } else if (nombreLower.includes('cafe con leche') || nombreLower.includes('café con leche')) {
+      return 'assets/img/cafe-1.png';
+    }
+
+    // Imagen por defecto si no coincide ninguna
+    return 'assets/img/250g-colombiano-brasil.png';
   }
 }
