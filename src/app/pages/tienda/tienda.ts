@@ -6,7 +6,7 @@ import { ProductoService } from '../../services/producto.service';
 import { Producto } from '../../models/producto.model';
 import { Auth, onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH, FIRESTORE } from '../../app.config';
-import { collection, query, where, onSnapshot, doc, updateDoc } from 'firebase/firestore';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import jsPDF from 'jspdf';
 
 @Component({
@@ -130,42 +130,33 @@ export class Tienda implements OnInit {
 
   async finalizarCompra() {
     const user = this.usuarioActual();
-    if (!user) return;
-
-    const total = this.carrito().reduce((acc, item) => acc + (item.producto.precio * item.cantidad), 0);
-    const numeroCompra = 'CAX-' + Math.floor(1000 + Math.random() * 9000);
-    const fechaHora = new Date().toLocaleString('es-AR');
-
-    const pedido = {
-      items: this.carrito(),
-      clienteEmail: user.email || 'Sin email',
-      total: total,
-      numeroCompra: numeroCompra,
-      fechaHora: fechaHora,
-      estado: 'pendiente'
-    };
+    if (!user || !user.email) return;
 
     try {
-      await this.productoService.crearPedido(pedido);
+      // Llamamos al método transaccional del servicio
+      await this.productoService.finalizarCompra(user.email, this.carrito());
 
-      // Descontamos el stock de cada producto comprado
-      for (let item of this.carrito()) {
-        if (item.producto.id) {
-          const productoRef = doc(this.firestore, 'productos', item.producto.id);
-          const nuevoStock = item.producto.stock - item.cantidad;
-          await updateDoc(productoRef, { stock: nuevoStock });
-        }
-      }
+      const total = this.carrito().reduce((acc, item) => acc + (item.producto.precio * item.cantidad), 0);
+      const numeroCompra = 'CAX-' + Math.floor(1000 + Math.random() * 9000);
+      const fechaHora = new Date().toLocaleString('es-AR');
 
-      this.generarComprobantePDF(pedido);
+      const pedidoParaPDF = {
+        items: this.carrito(),
+        clienteEmail: user.email,
+        total: total,
+        numeroCompra: numeroCompra,
+        fechaHora: fechaHora
+      };
+
+      this.generarComprobantePDF(pedidoParaPDF);
       alert('¡Pago aprobado! Tu pedido quedó a la espera de confirmación por el vendedor.');
       this.carrito.set([]);
       this.numeroTarjeta = '';
       this.vencimiento = '';
       this.cvv = '';
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error al enviar el pedido:', error);
-      alert('Hubo un error al procesar tu pedido.');
+      alert(`Hubo un error al procesar tu pedido: ${error.message || error}`);
     }
   }
 
@@ -207,10 +198,7 @@ export class Tienda implements OnInit {
     pdfDoc.save(`comprobante-${pedido.numeroCompra}.pdf`);
   }
 
-  // --- FUNCIÓN PARA GESTIONAR LAS IMÁGENES ---
   obtenerImagenProducto(nombre: string, urlBaseDatos?: string): string {
-
-
     const nombreLower = nombre.toLowerCase();
 
     if (nombreLower.includes('caxambu brasilero')) {
@@ -221,7 +209,7 @@ export class Tienda implements OnInit {
       return 'assets/img/Cafe-Blend.png'; 
     } else if (nombreLower.includes('flor de brasil 85/15')) {
       return 'assets/img/Cafe-Blend.png'; 
-    } else if (nombreLower.includes('azúcar')  || nombreLower.includes('azucar')) {
+    } else if (nombreLower.includes('azúcar') || nombreLower.includes('azucar')) {
       return 'assets/img/Caja-Azucar.png'; 
     } else if (nombreLower.includes('edulco')) {
       return 'assets/img/Caja-Edulco.png'; 
@@ -233,7 +221,6 @@ export class Tienda implements OnInit {
       return 'assets/img/cafe-1.png';
     }
 
-    // Imagen por defecto si no coincide ninguna
     return 'assets/img/250g-colombiano-brasil.png';
   }
 }

@@ -4,7 +4,7 @@
 
     <!-- CONTENEDOR PRINCIPAL SUPERIOR (Inventario a la izquierda, Pedidos Pendientes a la derecha en 1/4) -->
     <div class="top-admin-layout">
-      
+             
       <!-- Sección de Gestión de Productos (3 partes) -->
       <section class="admin-section inventario-section">
         <h3>Gestión de Inventario y Precios</h3>
@@ -70,7 +70,7 @@
         <h3>Pedidos Pendientes</h3>
         <div class="order-list-vertical">
           @for (pedido of pedidos(); track pedido.id) {
-            @if (pedido.estado === 'pendiente') {
+            @if (pedido.estado === 'pendiente' || pedido.estado === 'PENDIENTE') {
               <div class="order-card pending-card-compact">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
                   <h4 style="margin: 0; font-size: 1.2rem; color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden' }}</h4>
@@ -78,16 +78,16 @@
                     {{ pedido.estado }}
                   </span>
                 </div>
-                
+                 
                 <p style="font-size: 1.1rem; color: #666; margin: 0.2rem 0;"><strong>{{ pedido.clienteEmail }}</strong></p>
                 <p style="font-size: 1rem; color: #888; margin-bottom: 0.8rem;"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</p>
-
+                
                 <div class="order-details-summary" style="background: #fff; padding: 0.8rem; border-radius: 6px; border: 1px dashed #ddd; margin-bottom: 0.8rem;">
                   <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.1rem;">
-                    @for (it of pedido.items; track it.producto.id) {
+                    @for (it of pedido.items; track it.producto?.id || it.idProducto) {
                       <li style="display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid #f0f0f0;">
-                        <span>{{ it.producto.nombre }} (x{{ it.cantidad }})</span>
-                        <span style="font-weight: 600;">${{ it.producto.precio * it.cantidad }}</span>
+                        <span>{{ it.producto?.nombre || it.nombre }} (x{{ it.cantidad }})</span>
+                        <span style="font-weight: 600;">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
                       </li>
                     }
                   </ul>
@@ -122,7 +122,7 @@
       <h3>Historial de Pedidos</h3>
       <div class="order-grid-horizontal" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
         @for (pedido of pedidos(); track pedido.id) {
-          @if (pedido.estado !== 'pendiente') {
+          @if (pedido.estado !== 'pendiente' && pedido.estado !== 'PENDIENTE') {
             <div class="order-card" [ngClass]="{'approved': pedido.estado === 'confirmado', 'denied': pedido.estado === 'cancelado'}">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
                 <h4 style="margin: 0; color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden' }}</h4>
@@ -133,13 +133,13 @@
               
               <p style="font-size: 1.2rem; color: #666; margin: 0.3rem 0;">Cliente: <strong>{{ pedido.clienteEmail }}</strong></p>
               <p style="font-size: 1.1rem; color: #888; margin-bottom: 1rem;"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</p>
-
+              
               <div class="order-details-summary" style="background: #fff; padding: 1rem; border-radius: 6px; border: 1px dashed #ddd;">
                 <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.2rem;">
-                  @for (it of pedido.items; track it.producto.id) {
+                  @for (it of pedido.items; track it.producto?.id || it.idProducto) {
                     <li style="display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0;">
-                      <span>{{ it.producto.nombre }} (x{{ it.cantidad }})</span>
-                      <span style="font-weight: 600;">${{ it.producto.precio * it.cantidad }}</span>
+                      <span>{{ it.producto?.nombre || it.nombre }} (x{{ it.cantidad }})</span>
+                      <span style="font-weight: 600;">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
                     </li>
                   }
                 </ul>
