@@ -81,6 +81,10 @@ export class Tienda implements OnInit {
     });
   }
 
+  quitarDelCarrito(productoId: string | undefined) {
+  this.carrito.update(cart => cart.filter(item => item.producto.id !== productoId));
+}
+
   abrirPago() {
     const user = this.usuarioActual();
     if (!user) {

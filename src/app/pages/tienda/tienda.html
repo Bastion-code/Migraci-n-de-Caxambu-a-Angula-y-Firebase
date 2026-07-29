@@ -45,9 +45,12 @@
             <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
               @for (item of carrito(); track item.producto.id) {
                 <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 1.4rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 0.8rem;">
-                  <span>{{ item.producto.nombre }} (x{{ item.cantidad }})</span>
-                  <span style="font-weight: 600; color: var(--primary-color);">${{ item.producto.precio * item.cantidad }}</span>
-                </li>
+  <span>{{ item.producto.nombre }} (x{{ item.cantidad }})</span>
+  <div style="display: flex; align-items: center; gap: 1rem;">
+    <span style="font-weight: 600; color: var(--primary-color);">${{ item.producto.precio * item.cantidad }}</span>
+    <i class="fa-solid fa-trash" (click)="quitarDelCarrito(item.producto.id)" style="color: #c00; cursor: pointer;" title="Quitar del carrito"></i>
+  </div>
+</li>
               }
             </ul>
 
