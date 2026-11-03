@@ -5,7 +5,12 @@
       <i class="fa-regular fa-user"></i>
     </div>
     <div class="perfil-info-basica">
-      <h2>Mi Perfil</h2>
+      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;">
+        <h2>Mi Perfil</h2>
+        @if (isAdmin) {
+          <span class="badge-admin">Administrador</span>
+        }
+      </div>
       <p>{{ (authService.currentUser$ | async)?.displayName || 'Sin nombre configurado' }}</p>
     </div>
   </div>
@@ -32,7 +37,7 @@
             @if (!editando) {
               <p>{{ (authService.currentUser$ | async)?.displayName || 'Aún no ingresaste tu nombre' }}</p>
             } @else {
-              <input type="text" [(ngModel)]="nombreActual" placeholder="Ej: Sebastián Vidal" style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1.4rem;">
+              <input type="text" [(ngModel)]="nombreActual" placeholder="Ej: Mariano..." style="padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; font-size: 1.4rem;">
             }
           </div>
         </div>
@@ -46,6 +51,7 @@
           </div>
         </div>
 
+        <!-- Fila Contraseña -->
         <div class="dato-row">
           <div class="icon-dato"><i class="fa-solid fa-lock"></i></div>
           <div class="dato-text">
@@ -64,10 +70,17 @@
     <!-- Columna Derecha: Navegación -->
     <div class="columna-lateral">
       <div class="card-blanca menu-lateral">
-        <a routerLink="/tienda">
-          <span><i class="fa-solid fa-bag-shopping"></i> Mis Compras</span>
-          <i class="fa-solid fa-chevron-right"></i>
-        </a>
+        @if (isAdmin) {
+          <a routerLink="/admin">
+            <span><i class="fa-solid fa-gauge-high"></i> Panel de Control</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </a>
+        } @else {
+          <a routerLink="/tienda">
+            <span><i class="fa-solid fa-bag-shopping"></i> Mis Compras</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </a>
+        }
         <a routerLink="/soporte">
           <span><i class="fa-regular fa-circle-question"></i> Soporte</span>
           <i class="fa-solid fa-chevron-right"></i>

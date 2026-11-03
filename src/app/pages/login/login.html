@@ -3,7 +3,9 @@
         <h2>Iniciar Sesión</h2>
         <form id="loginForm" (ngSubmit)="onSubmit()">
 
-            <div *ngIf="errorMessage" class="error-message">{{ errorMessage }}</div>
+            @if (errorMessage) {
+              <div class="error-message">{{ errorMessage }}</div>
+            }
 
             <div class="form-group">
                 <label for="email">Correo Electrónico</label>
@@ -12,11 +14,31 @@
 
             <div class="form-group">
                 <label for="password">Contraseña</label>
-                <input type="password" id="password" [(ngModel)]="pass" [ngModelOptions]="{standalone: true}" required placeholder="ej: 123">
+                <div style="position: relative; display: flex; align-items: center;">
+                    <input
+                        [type]="mostrarPassword ? 'text' : 'password'"
+                        id="password"
+                        [(ngModel)]="pass"
+                        [ngModelOptions]="{standalone: true}"
+                        required
+                        placeholder="ej: 123"
+                        style="width: 100%; padding-right: 4.5rem;"
+                    >
+                    <button
+                        type="button"
+                        (click)="toggleMostrarPassword()"
+                        title="{{ mostrarPassword ? 'Ocultar contraseña' : 'Ver contraseña' }}"
+                        style="position: absolute; right: 1.2rem; background: none; border: none; cursor: pointer; color: var(--primary-color); font-size: 1.6rem; padding: 0.4rem; display: flex; align-items: center; justify-content: center; transition: color 0.2s;"
+                    >
+                        <i class="fa-solid" [ngClass]="mostrarPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </button>
+                </div>
             </div>
 
             <div class="form-options" style="text-align: center; margin-bottom: 2rem;">
-              <a href="#" style="color: var(--primary-color); text-decoration: none; font-size: 1.3rem;">¿Olvidaste tu contraseña?</a>
+              <a href="#" (click)="abrirRecuperar($event)" style="color: var(--primary-color); text-decoration: none; font-size: 1.3rem; font-weight: 500; cursor: pointer;">
+                ¿Olvidaste tu contraseña?
+              </a>
             </div>
 
             <button type="submit" class="btn-submit">
@@ -28,4 +50,57 @@
             ¿No tienes cuenta? <a routerLink="/registro">Regístrate</a>
         </p>
     </div>
+
+    <!-- MODAL DE RECUPERACIÓN DE CONTRASEÑA -->
+    @if (mostrarModalRecuperar) {
+      <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 10000; padding: 1.5rem;">
+        <div class="modal-content" style="background: white; padding: 3rem; border-radius: 14px; width: 100%; max-width: 440px; box-shadow: 0 10px 35px rgba(0,0,0,0.2); position: relative;">
+          
+          <button (click)="cerrarRecuperar()" style="position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; font-size: 2.4rem; cursor: pointer; color: #888;">&times;</button>
+          
+          <div style="text-align: center; margin-bottom: 2rem;">
+            <div style="width: 55px; height: 55px; border-radius: 50%; background: #fdf5ea; color: var(--primary-color); display: inline-flex; align-items: center; justify-content: center; font-size: 2.2rem; margin-bottom: 1rem;">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <h3 style="font-size: 2rem; color: var(--primary-color); margin: 0 0 0.8rem 0;">Recuperar Contraseña</h3>
+            <p style="font-size: 1.35rem; color: #666; margin: 0; line-height: 1.5;">
+              Ingresá tu correo electrónico y te enviaremos un enlace seguro para restablecer tu clave.
+            </p>
+          </div>
+
+          <div style="margin-bottom: 2rem;">
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.6rem; color: #555; font-weight: 600;">Correo Electrónico:</label>
+            <input
+              type="email"
+              [(ngModel)]="emailRecuperar"
+              placeholder="ej: tu-email@ejemplo.com"
+              style="width: 100%; padding: 1.2rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1.4rem; font-family: inherit;"
+            />
+          </div>
+
+          <div style="display: flex; gap: 1rem;">
+            <button
+              type="button"
+              (click)="cerrarRecuperar()"
+              style="flex: 1; padding: 1.2rem; border: 1px solid #ddd; background: #f5f5f5; color: #555; border-radius: 8px; font-size: 1.4rem; cursor: pointer; font-weight: 600;"
+            >
+              Cancelar
+            </button>
+            <button
+              type="button"
+              (click)="enviarRecuperacion()"
+              [disabled]="enviandoRecuperacion"
+              style="flex: 1.5; padding: 1.2rem; border: none; background: var(--primary-color); color: white; border-radius: 8px; font-size: 1.4rem; cursor: pointer; font-weight: 600;"
+            >
+              @if (enviandoRecuperacion) {
+                Enviando... <i class="fa-solid fa-spinner fa-spin"></i>
+              } @else {
+                Enviar Enlace
+              }
+            </button>
+          </div>
+
+        </div>
+      </div>
+    }
 </main>

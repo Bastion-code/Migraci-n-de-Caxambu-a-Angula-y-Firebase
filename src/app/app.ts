@@ -1,8 +1,10 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, computed, OnInit } from '@angular/core';
 import { RouterOutlet, RouterLink, Router, NavigationEnd } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Auth, onAuthStateChanged, User } from 'firebase/auth';
 import { FIREBASE_AUTH } from './app.config';
+import { AuthService } from './services/auth.service';
+import { ToastService } from './services/toast.service';
 import { filter } from 'rxjs/operators';
 
 @Component({
@@ -16,11 +18,16 @@ export class AppComponent implements OnInit {
   title = 'CaxambuAngular';
   
   private auth: Auth = inject(FIREBASE_AUTH);
+  private authService = inject(AuthService);
   private router = inject(Router);
+  public toastService = inject(ToastService);
 
   // Señal reactiva para el usuario actual
   currentUser = signal<User | null>(null);
   
+  // Determina si el usuario logueado es Administrador (Mariano)
+  isAdmin = computed(() => this.authService.isAdmin(this.currentUser()));
+
   // Controla si el menú desplegable está abierto o cerrado
   dropdownOpen = signal(false);
 
@@ -50,9 +57,11 @@ export class AppComponent implements OnInit {
     try {
       await this.auth.signOut();
       this.dropdownOpen.set(false);
+      this.toastService.info('Sesión finalizada con éxito.');
       this.router.navigate(['/login']);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
+      this.toastService.error('Error al cerrar sesión.');
     }
   }
 }

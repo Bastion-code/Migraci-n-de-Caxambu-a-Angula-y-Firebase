@@ -1,14 +1,26 @@
 <main class="main-content">
   <div class="container">
-    <h1 class="heading-1">Tienda de Cafés Caxambu</h1>
+    <h1 class="heading-1">Tienda de Café Caxambú</h1>
 
     <div class="tienda-layout" style="display: grid; grid-template-columns: 2fr 1fr; gap: 3rem;">
       
       <div class="container-products">
         @for (producto of productos(); track producto.id) {
-          <div class="card-product">
+          <div class="card-product" style="position: relative;">
+            
+            <!-- Badges de Stock -->
+            @if (producto.stock <= 0) {
+              <span style="position: absolute; top: 1rem; right: 1rem; background: #e74c3c; color: white; font-size: 1.1rem; font-weight: bold; padding: 0.4rem 1rem; border-radius: 20px; text-transform: uppercase; z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,0.2);">
+                Agotado
+              </span>
+            } @else if (producto.stock <= 3) {
+              <span style="position: absolute; top: 1rem; right: 1rem; background: #e67e22; color: white; font-size: 1.05rem; font-weight: bold; padding: 0.4rem 0.9rem; border-radius: 20px; text-transform: uppercase; z-index: 2; box-shadow: 0 2px 6px rgba(0,0,0,0.15);">
+                ¡Últimas {{ producto.stock }} unid.!
+              </span>
+            }
+
             <div class="container-img">
-              <img [src]="obtenerImagenProducto(producto.nombre)" [alt]="producto.nombre" />
+              <img [src]="obtenerImagenProducto(producto.nombre)" [alt]="producto.nombre" [style.filter]="producto.stock <= 0 ? 'grayscale(80%)' : 'none'" />
             </div>
             <div class="content-card-product">
               <h3>{{ producto.nombre }}</h3>
@@ -20,9 +32,15 @@
                   <i class="fa-solid fa-star"></i> Reseñas
                 </button>
 
-                <div class="add-cart" (click)="agregarAlCarrito(producto)" title="Agregar al carrito">
-                  <i class="fa-solid fa-basket-shopping"></i>
-                </div>
+                @if (producto.stock > 0) {
+                  <div class="add-cart" (click)="agregarAlCarrito(producto)" title="Agregar al carrito">
+                    <i class="fa-solid fa-basket-shopping"></i>
+                  </div>
+                } @else {
+                  <div class="add-cart" style="background: #ccc; cursor: not-allowed;" title="Producto sin stock disponible">
+                    <i class="fa-solid fa-ban"></i>
+                  </div>
+                }
               </div>
 
             </div>
@@ -45,12 +63,12 @@
             <ul style="list-style: none; padding: 0; margin-bottom: 2rem;">
               @for (item of carrito(); track item.producto.id) {
                 <li style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; font-size: 1.4rem; border-bottom: 1px solid #f0f0f0; padding-bottom: 0.8rem;">
-  <span>{{ item.producto.nombre }} (x{{ item.cantidad }})</span>
-  <div style="display: flex; align-items: center; gap: 1rem;">
-    <span style="font-weight: 600; color: var(--primary-color);">${{ item.producto.precio * item.cantidad }}</span>
-    <i class="fa-solid fa-trash" (click)="quitarDelCarrito(item.producto.id)" style="color: #c00; cursor: pointer;" title="Quitar del carrito"></i>
-  </div>
-</li>
+                  <span>{{ item.producto.nombre }} (x{{ item.cantidad }})</span>
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span style="font-weight: 600; color: var(--primary-color);">${{ item.producto.precio * item.cantidad }}</span>
+                    <i class="fa-solid fa-trash" (click)="quitarDelCarrito(item.producto.id)" style="color: #c00; cursor: pointer;" title="Quitar del carrito"></i>
+                  </div>
+                </li>
               }
             </ul>
 
@@ -62,7 +80,7 @@
             <button (click)="abrirPago()" style="width: 100%; background-color: var(--primary-color); color: white; border: none; padding: 1.2rem; border-radius: 6px; font-size: 1.5rem; font-weight: 600; cursor: pointer; text-transform: uppercase;">
               Realizar Pedido
             </button>
-            <p style="font-size: 1.1rem; color: #888; margin-top: 1rem; text-align: center;">Quedará pendiente hasta la confirmación del vendedor.</p>
+            <p style="font-size: 1.1rem; color: #888; margin-top: 1rem; text-align: center;">Quedará registrado y pendiente de confirmación.</p>
           }
         </div>
 
@@ -90,8 +108,11 @@
                         </span>
                       </div>
                       
-                      <div style="font-size: 1.1rem; color: #888; margin-bottom: 0.8rem;">
-                        <i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}
+                      <div style="font-size: 1.1rem; color: #888; margin-bottom: 0.8rem; display: flex; justify-content: space-between;">
+                        <span><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</span>
+                        <span style="color: #555; font-weight: 600;">
+                          <i class="fa-solid fa-credit-card"></i> {{ pedido.metodoPago || 'Mercado Pago' }}
+                        </span>
                       </div>
 
                       <div style="color: #666; font-size: 1.2rem; margin-bottom: 0.8rem;">
@@ -116,6 +137,7 @@
     </div>
   </div>
 
+  <!-- MODAL DE RESEÑAS -->
   @if (productoSeleccionadoId()) {
     <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;">
       
@@ -182,15 +204,55 @@
     </div>
   }
 
+  <!-- MODAL DE PAGO (SELECCIÓN DE MÉTODO: MERCADO PAGO / TRANSFERENCIA / EFECTIVO) -->
   @if (mostrarPago()) {
-    <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000;">
-      <div class="modal-content pago-modal" style="background: white; padding: 3rem; border-radius: 12px; width: 90%; max-width: 450px; position: relative;">
+    <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 1000; padding: 1.5rem;">
+      <div class="modal-content pago-modal" style="background: white; padding: 3rem; border-radius: 16px; width: 100%; max-width: 480px; position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.25);">
         
         <button (click)="cerrarPago()" style="position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #888;">&times;</button>
         
-        <h2 style="font-size: 2rem; margin-bottom: 2rem; color: var(--dark-color); text-align: center;">
-          <i class="fa-regular fa-credit-card" style="margin-right: 0.5rem;"></i> Datos de Pago
+        <h2 style="font-size: 2.2rem; margin-bottom: 1.8rem; color: var(--dark-color); text-align: center; font-weight: 700;">
+          Seleccioná tu Forma de Pago
         </h2>
+
+        <!-- SELECTOR DE FORMA DE PAGO -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-bottom: 2rem;">
+          <button
+            type="button"
+            (click)="metodoPagoSeleccionado = 'Mercado Pago'"
+            [style.background]="metodoPagoSeleccionado === 'Mercado Pago' ? '#009ee3' : '#faf8f5'"
+            [style.color]="metodoPagoSeleccionado === 'Mercado Pago' ? 'white' : '#444'"
+            [style.border]="metodoPagoSeleccionado === 'Mercado Pago' ? '2px solid #009ee3' : '1.5px solid #ded5ca'"
+            style="padding: 1.2rem 0.6rem; border-radius: 10px; font-size: 1.25rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+          >
+            <i class="fa-solid fa-mobile-screen-button" style="font-size: 1.8rem;"></i>
+            Mercado Pago
+          </button>
+          
+          <button
+            type="button"
+            (click)="metodoPagoSeleccionado = 'Transferencia'"
+            [style.background]="metodoPagoSeleccionado === 'Transferencia' ? '#6c5ce7' : '#faf8f5'"
+            [style.color]="metodoPagoSeleccionado === 'Transferencia' ? 'white' : '#444'"
+            [style.border]="metodoPagoSeleccionado === 'Transferencia' ? '2px solid #6c5ce7' : '1.5px solid #ded5ca'"
+            style="padding: 1.2rem 0.6rem; border-radius: 10px; font-size: 1.25rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+          >
+            <i class="fa-solid fa-building-columns" style="font-size: 1.8rem;"></i>
+            Transferencia
+          </button>
+
+          <button
+            type="button"
+            (click)="metodoPagoSeleccionado = 'Efectivo'"
+            [style.background]="metodoPagoSeleccionado === 'Efectivo' ? '#27ae60' : '#faf8f5'"
+            [style.color]="metodoPagoSeleccionado === 'Efectivo' ? 'white' : '#444'"
+            [style.border]="metodoPagoSeleccionado === 'Efectivo' ? '2px solid #27ae60' : '1.5px solid #ded5ca'"
+            style="padding: 1.2rem 0.6rem; border-radius: 10px; font-size: 1.25rem; font-weight: 700; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; transition: all 0.2s;"
+          >
+            <i class="fa-solid fa-money-bill-wave" style="font-size: 1.8rem;"></i>
+            Efectivo
+          </button>
+        </div>
 
         @if (errorPago()) {
           <div style="background-color: #fee; color: #c00; padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; font-size: 1.3rem; text-align: center;">
@@ -198,29 +260,103 @@
           </div>
         }
 
-        <div style="margin-bottom: 1.5rem;">
-          <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555;">Número de Tarjeta</label>
-          <input type="text" [(ngModel)]="numeroTarjeta" placeholder="0000 0000 0000 0000" maxlength="19" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1.4rem;">
-        </div>
-
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem;">
-          <div>
-            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555;">Vencimiento</label>
-            <input type="text" [(ngModel)]="vencimiento" placeholder="MM/AA" maxlength="5" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1.4rem;">
+        <!-- SI ELIGE MERCADO PAGO / TARJETA -->
+        @if (metodoPagoSeleccionado === 'Mercado Pago') {
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555; font-weight: 600;">Número de Tarjeta</label>
+            <input type="text" [(ngModel)]="numeroTarjeta" placeholder="0000 0000 0000 0000" maxlength="19" style="width: 100%; padding: 1rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1.4rem; font-family: inherit;">
           </div>
-          <div>
-            <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555;">CVV</label>
-            <input type="password" [(ngModel)]="cvv" placeholder="123" maxlength="3" style="width: 100%; padding: 1rem; border: 1px solid #ddd; border-radius: 6px; font-size: 1.4rem;">
-          </div>
-        </div>
 
-        <button (click)="confirmarPago()" [disabled]="procesandoPago()" style="width: 100%; background-color: #27ae60; color: white; border: none; padding: 1.4rem; border-radius: 6px; font-size: 1.6rem; font-weight: bold; cursor: pointer; text-transform: uppercase;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem;">
+            <div>
+              <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555; font-weight: 600;">Vencimiento</label>
+              <input type="text" [(ngModel)]="vencimiento" placeholder="MM/AA" maxlength="5" style="width: 100%; padding: 1rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1.4rem; font-family: inherit;">
+            </div>
+            <div>
+              <label style="display: block; font-size: 1.3rem; margin-bottom: 0.5rem; color: #555; font-weight: 600;">CVV</label>
+              <input type="password" [(ngModel)]="cvv" placeholder="123" maxlength="3" style="width: 100%; padding: 1rem; border: 1.5px solid #ddd; border-radius: 8px; font-size: 1.4rem; font-family: inherit;">
+            </div>
+          </div>
+        }
+
+        <!-- SI ELIGE TRANSFERENCIA -->
+        @if (metodoPagoSeleccionado === 'Transferencia') {
+          <div style="background: #f7f4ff; border: 1.5px dashed #6c5ce7; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; font-size: 1.3rem; color: #444;">
+            <p style="margin: 0 0 0.6rem 0; font-weight: 700; color: #6c5ce7;">Datos para la Transferencia Bancaria:</p>
+            <p style="margin: 0.3rem 0;"><strong>Alias:</strong> CAXAMBU.CAFE.MP</p>
+            <p style="margin: 0.3rem 0;"><strong>CVU:</strong> 0000003100043829104829</p>
+            <p style="margin: 0.3rem 0;"><strong>Titular:</strong> Mariano Ariel Armesto</p>
+            <small style="color: #777; display: block; margin-top: 0.8rem;">Podrás enviar el comprobante por WhatsApp al confirmar.</small>
+          </div>
+        }
+
+        <!-- SI ELIGE EFECTIVO -->
+        @if (metodoPagoSeleccionado === 'Efectivo') {
+          <div style="background: #f2faf5; border: 1.5px dashed #27ae60; border-radius: 10px; padding: 1.5rem; margin-bottom: 2rem; font-size: 1.3rem; color: #444;">
+            <p style="margin: 0 0 0.5rem 0; font-weight: 700; color: #27ae60;"><i class="fa-solid fa-hand-holding-dollar"></i> Pago Contra Entrega:</p>
+            <p style="margin: 0;">Abonás el monto en efectivo al momento de recibir tu pedido o retirarlo por la sucursal.</p>
+          </div>
+        }
+
+        <button (click)="confirmarPago()" [disabled]="procesandoPago()" style="width: 100%; background-color: #27ae60; color: white; border: none; padding: 1.4rem; border-radius: 8px; font-size: 1.6rem; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: all 0.25s;">
           @if (procesandoPago()) {
             Procesando... <i class="fa-solid fa-spinner fa-spin"></i>
           } @else {
-            Confirmar Pago
+            Confirmar Pedido ({{ metodoPagoSeleccionado }})
           }
         </button>
+      </div>
+    </div>
+  }
+
+  <!-- MODAL DE PEDIDO CONFIRMADO CON ENVÍO DIRECTO A WHATSAPP -->
+  @if (pedidoExitoso(); as ped) {
+    <div class="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); display: flex; justify-content: center; align-items: center; z-index: 10000; padding: 1.5rem;">
+      <div class="modal-content" style="background: white; padding: 3rem; border-radius: 16px; width: 100%; max-width: 500px; text-align: center; box-shadow: 0 12px 40px rgba(0,0,0,0.25); position: relative;">
+        
+        <button (click)="cerrarModalExito()" style="position: absolute; top: 1.5rem; right: 2rem; background: none; border: none; font-size: 2.5rem; cursor: pointer; color: #888;">&times;</button>
+        
+        <div style="width: 65px; height: 65px; border-radius: 50%; background: #eafaf1; color: #27ae60; display: inline-flex; align-items: center; justify-content: center; font-size: 2.8rem; margin-bottom: 1.5rem;">
+          <i class="fa-solid fa-circle-check"></i>
+        </div>
+
+        <h2 style="font-size: 2.4rem; color: var(--primary-color); margin: 0 0 0.8rem 0; font-weight: 700;">¡Pago y Pedido Aprobados!</h2>
+        <p style="font-size: 1.4rem; color: #666; margin: 0 0 2rem 0; line-height: 1.5;">
+          Tu orden <strong>{{ ped.numeroCompra }}</strong> fue registrada en el sistema y tu comprobante PDF ya se descargó automáticamente.
+        </p>
+
+        <div style="background: #faf8f5; border: 1px dashed #d5c8b8; border-radius: 10px; padding: 1.5rem; margin-bottom: 2.5rem; text-align: left; font-size: 1.35rem;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+            <span style="color: #777;">Total Pagado:</span>
+            <strong style="color: var(--primary-color); font-size: 1.5rem;">${{ ped.total }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between; margin-bottom: 0.6rem;">
+            <span style="color: #777;">Forma de Pago:</span>
+            <strong style="color: #444;">{{ ped.metodoPago }}</strong>
+          </div>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: #777;">Artículos:</span>
+            <span>{{ ped.items.length }} producto(s)</span>
+          </div>
+        </div>
+
+        <!-- BOTÓN DE CONFIRMACIÓN POR WHATSAPP -->
+        <a
+          [href]="urlWhatsAppPedido()"
+          target="_blank"
+          rel="noopener noreferrer"
+          style="display: flex; align-items: center; justify-content: center; gap: 1rem; width: 100%; background-color: #25d366; color: white; padding: 1.4rem; border-radius: 10px; font-size: 1.5rem; font-weight: 700; text-decoration: none; text-transform: uppercase; margin-bottom: 1rem; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.35); transition: all 0.25s;"
+        >
+          <i class="fa-brands fa-whatsapp" style="font-size: 2.2rem;"></i> Confirmar Pedido por WhatsApp
+        </a>
+
+        <button
+          (click)="cerrarModalExito()"
+          style="background: none; border: none; color: #888; font-size: 1.3rem; cursor: pointer; text-decoration: underline;"
+        >
+          Cerrar y seguir navegando
+        </button>
+
       </div>
     </div>
   }

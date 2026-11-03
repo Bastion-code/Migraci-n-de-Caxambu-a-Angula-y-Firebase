@@ -5,7 +5,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
-  updateProfile, // <-- AGREGAR ESTO
+  updateProfile,
   User
 } from 'firebase/auth';
 import { Observable } from 'rxjs';
@@ -15,9 +15,17 @@ import { FIREBASE_AUTH } from '../app.config';
 export class AuthService {
   private auth: Auth = inject(FIREBASE_AUTH);
 
+  // Lista de correos autorizados para el rol de administrador
+  readonly adminEmails: string[] = ['mariano@caxambu.com'];
+
   currentUser$ = new Observable<User | null>((subscriber) => {
     return onAuthStateChanged(this.auth, (user) => subscriber.next(user));
   });
+
+  isAdmin(user: User | null): boolean {
+    if (!user || !user.email) return false;
+    return this.adminEmails.includes(user.email.toLowerCase().trim());
+  }
 
   register(email: string, password: string) {
     return createUserWithEmailAndPassword(this.auth, email, password);
@@ -35,7 +43,7 @@ export class AuthService {
     return !!this.auth.currentUser;
   }
 
-  // --- NUEVA FUNCIÓN PARA CAMBIAR EL NOMBRE ---
+  // CAMBIAR EL NOMBRE
   actualizarNombre(nombre: string) {
     if (this.auth.currentUser) {
       return updateProfile(this.auth.currentUser, { displayName: nombre });

@@ -1,10 +1,11 @@
 export interface Producto {
   id?: string;
   nombre: string;
-  descripcion: string;
+  descripcion?: string;
   precio: number;
-  categoria: string;
-  imagenUrl: string;
+  costo?: number; // Precio de costo para cálculo de margen comercial
+  categoria?: string;
+  imagenUrl?: string;
   stock: number;
   descuento?: number; 
 }
@@ -15,7 +16,7 @@ export interface Resena {
   productoId: string;
   usuarioEmail: string;
   comentario: string;
-  calificacion: number; // Por ejemplo, de 1 a 5
+  calificacion: number;
   fechaHora: string;
   timestamp?: any;
 }

@@ -1,5 +1,6 @@
 {
   "hosting": {
+    "site": "caxambu-d133e",
     "public": "dist/caxambu-angular/browser",
     "ignore": [
       "firebase.json",

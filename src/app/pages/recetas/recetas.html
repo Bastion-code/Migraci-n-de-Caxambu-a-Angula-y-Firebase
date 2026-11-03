@@ -1,39 +1,284 @@
-<main class="main-content">
+<main class="main-content recetas-page">
   <div class="container">
-    <h1 class="heading-1">Recetas de Café</h1>
-
-    <input
-      [formControl]="searchControl"
-      type="text"
-      placeholder="Buscar por nombre o ingrediente (ej: espresso, leche)..."
-      style="width: 100%; padding: 1.2rem; margin-bottom: 3rem; font-size: 1.5rem; border: 2px solid var(--primary-color); border-radius: 0.8rem;"
-    >
-
-    @if (cargando) {
-      <p style="text-align: center; font-size: 1.6rem;">Cargando recetas...</p>
-    }
-
-    @if (error) {
-      <p style="text-align: center; font-size: 1.6rem; color: var(--danger-color);">
-        No se pudo conectar con la API de recetas. Intentá de nuevo más tarde.
+    
+    <!-- ENCABEZADO PRINCIPAL -->
+    <header class="recetas-header">
+      <span class="badge-subtitulo"><i class="fa-solid fa-mug-hot"></i> Laboratorio de Café Caxambú</span>
+      <h1 class="heading-1">Guía Barista & Recetas</h1>
+      <p class="recetas-descripcion-gral">
+        Descubrí las proporciones exactas de gramaje, técnicas de extracción profesional y cuál de nuestros granos de café Caxambú es el maridaje perfecto para cada preparación.
       </p>
+    </header>
+
+    @if (cargando()) {
+      <div class="loading-state">
+        <i class="fa-solid fa-circle-notch fa-spin"></i>
+        <p>Cargando catálogo de recetas y perfiles de extracción...</p>
+      </div>
     }
 
-    @if (!cargando && !error) {
-      <div class="container-products">
-        @for (coffee of filteredCoffees; track coffee.id) {
-          <div class="card-product">
-            <div class="container-img">
-              <img [src]="coffee.image" [alt]="coffee.title" (error)="onImageError($event)" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-            <div class="content-card-product">
-              <h3>{{ coffee.title }}</h3>
-              <p style="color: #888; font-size: 1.3rem;">{{ coffee.ingredients?.join(', ') }}</p>
-            </div>
+    @if (!cargando()) {
+      <div class="recetas-layout">
+        
+        <!-- ============================================== -->
+        <!-- COLUMNA IZQUIERDA: Selector & Lista de Recetas -->
+        <!-- ============================================== -->
+        <aside class="columna-lista">
+          
+          <!-- Buscador Interactivo -->
+          <div class="buscador-box">
+            <i class="fa-solid fa-magnifying-glass buscador-icon"></i>
+            <input
+              [formControl]="searchControl"
+              type="text"
+              placeholder="Buscar receta, ingrediente o café..."
+              class="buscador-input"
+            />
+            @if (searchControl.value) {
+              <button class="btn-clear" (click)="limpiarBusqueda()" title="Limpiar búsqueda">
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            }
           </div>
-        } @empty {
-          <p style="grid-column: 1 / -1; text-align: center; font-size: 1.6rem;">No se encontraron recetas con esa búsqueda.</p>
-        }
+
+          <!-- Filtro por Categorías -->
+          <div class="filtros-categorias">
+            <button
+              class="pill-btn"
+              [class.activo]="categoriaSeleccionada() === 'todos'"
+              (click)="cambiarCategoria('todos')"
+            >
+              Todos
+            </button>
+            <button
+              class="pill-btn"
+              [class.activo]="categoriaSeleccionada() === 'espressos'"
+              (click)="cambiarCategoria('espressos')"
+            >
+              Espressos & Puros
+            </button>
+            <button
+              class="pill-btn"
+              [class.activo]="categoriaSeleccionada() === 'leche'"
+              (click)="cambiarCategoria('leche')"
+            >
+              Con Leche
+            </button>
+            <button
+              class="pill-btn"
+              [class.activo]="categoriaSeleccionada() === 'especiales'"
+              (click)="cambiarCategoria('especiales')"
+            >
+              Especiales
+            </button>
+          </div>
+
+          <!-- Conteo de recetas encontradas -->
+          <div class="recetas-meta-info">
+            <span>{{ recetasFiltradas().length }} recetas disponibles</span>
+          </div>
+
+          <!-- Lista Scrolleable de Recetas -->
+          <div class="lista-recetas-scroll">
+            @for (receta of recetasFiltradas(); track receta.id) {
+              <div
+                class="receta-item-card"
+                [class.activa]="recetaSeleccionada()?.id === receta.id"
+                (click)="seleccionarReceta(receta)"
+              >
+                <div class="receta-item-img">
+                  <img
+                    [src]="receta.image"
+                    [alt]="receta.title"
+                    (error)="onImageError($event)"
+                  />
+                </div>
+                <div class="receta-item-info">
+                  <span class="badge-mini-categoria">{{ receta.categoryLabel }}</span>
+                  <h4>{{ receta.title }}</h4>
+                  <p class="receta-item-ingredientes">
+                    <i class="fa-solid fa-circle-dot"></i> {{ receta.productoRecomendado.nombre }}
+                  </p>
+                </div>
+                <div class="receta-item-arrow">
+                  <i class="fa-solid fa-chevron-right"></i>
+                </div>
+              </div>
+            } @empty {
+              <div class="vacio-box">
+                <i class="fa-solid fa-mug-saucer vacio-icon"></i>
+                <p>No encontramos recetas con esos criterios.</p>
+                <button class="btn-sm-reset" (click)="limpiarBusqueda(); cambiarCategoria('todos')">
+                  Ver todas las recetas
+                </button>
+              </div>
+            }
+          </div>
+        </aside>
+
+        <!-- ============================================== -->
+        <!-- COLUMNA DERECHA: Ficha Técnica Barista Detalle -->
+        <!-- ============================================== -->
+        <section class="columna-detalle">
+          @if (recetaSeleccionada(); as rec) {
+            
+            <!-- TARJETA HERO DE LA RECETA -->
+            <article class="detalle-hero-card">
+              <div class="hero-img-container">
+                <img
+                  [src]="rec.image"
+                  [alt]="rec.title"
+                  (error)="onImageError($event)"
+                  class="hero-img"
+                />
+                <span class="hero-badge-tag">{{ rec.categoryLabel }}</span>
+              </div>
+              <div class="hero-content">
+                <h2>{{ rec.title }}</h2>
+                <p class="hero-description">{{ rec.description }}</p>
+                
+                <div class="hero-tags-ingredientes">
+                  @for (ing of rec.ingredients; track ing) {
+                    <span class="tag-ingrediente"><i class="fa-solid fa-check"></i> {{ ing }}</span>
+                  }
+                </div>
+              </div>
+            </article>
+
+            <!-- MÉTRICAS DE EXTRACCIÓN (GRAMAJES Y TIEMPOS) -->
+            <section class="seccion-bloque">
+              <h3 class="seccion-titulo">
+                <i class="fa-solid fa-sliders"></i> Parámetros de Extracción Barista
+              </h3>
+              
+              <div class="metricas-grid">
+                <div class="metrica-card">
+                  <div class="metrica-icon"><i class="fa-solid fa-scale-balanced"></i></div>
+                  <div class="metrica-info">
+                    <span class="metrica-label">Gramaje de Café</span>
+                    <strong class="metrica-valor">{{ rec.gramaje }}</strong>
+                  </div>
+                </div>
+
+                <div class="metrica-card">
+                  <div class="metrica-icon"><i class="fa-solid fa-gear"></i></div>
+                  <div class="metrica-info">
+                    <span class="metrica-label">Tipo de Molienda</span>
+                    <strong class="metrica-valor">{{ rec.molienda }}</strong>
+                  </div>
+                </div>
+
+                <div class="metrica-card">
+                  <div class="metrica-icon"><i class="fa-solid fa-droplet"></i></div>
+                  <div class="metrica-info">
+                    <span class="metrica-label">Ratio / Proporción</span>
+                    <strong class="metrica-valor">{{ rec.ratio }}</strong>
+                  </div>
+                </div>
+
+                <div class="metrica-card">
+                  <div class="metrica-icon"><i class="fa-solid fa-stopwatch"></i></div>
+                  <div class="metrica-info">
+                    <span class="metrica-label">Tiempo Extracción</span>
+                    <strong class="metrica-valor">{{ rec.tiempo }}</strong>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- PRODUCTO CAXAMBÚ RECOMENDADO -->
+            <section class="seccion-bloque">
+              <div class="caxambu-recomendado-card">
+                <div class="recomendado-header-pill">
+                  <i class="fa-solid fa-award"></i> Maridaje de la Casa Caxambú
+                </div>
+                
+                <div class="recomendado-body">
+                  <div class="recomendado-img-box">
+                    <img
+                      [src]="rec.productoRecomendado.imagen"
+                      [alt]="rec.productoRecomendado.nombre"
+                      class="recomendado-img"
+                    />
+                  </div>
+
+                  <div class="recomendado-info">
+                    <span class="recomendado-tipo">{{ rec.productoRecomendado.tipo }}</span>
+                    <h3 class="recomendado-nombre">{{ rec.productoRecomendado.nombre }}</h3>
+                    
+                    <!-- Notas de cata -->
+                    <div class="notas-cata-row">
+                      <span class="notas-label">Notas sensoriales:</span>
+                      @for (nota of rec.productoRecomendado.notas; track nota) {
+                        <span class="badge-nota">{{ nota }}</span>
+                      }
+                    </div>
+
+                    <p class="recomendado-por-que">
+                      <strong>¿Por qué lo recomendamos?</strong> {{ rec.productoRecomendado.porQue }}
+                    </p>
+
+                    <div class="recomendado-cta">
+                      <a routerLink="/tienda" class="btn-comprar-grano">
+                        <i class="fa-solid fa-bag-shopping"></i> Conseguir este café en la Tienda
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- GUÍA PASO A PASO & INGREDIENTES -->
+            <div class="pasos-ingredientes-grid">
+              
+              <!-- Ingredientes exactos -->
+              <section class="seccion-bloque card-blanca-detalle">
+                <h3 class="seccion-titulo-sm">
+                  <i class="fa-solid fa-list-check"></i> Ingredientes Exactos
+                </h3>
+                <ul class="lista-ingredientes-detallados">
+                  @for (item of rec.ingredientesDetallados; track item) {
+                    <li>
+                      <i class="fa-regular fa-circle-check"></i>
+                      <span>{{ item }}</span>
+                    </li>
+                  }
+                </ul>
+              </section>
+
+              <!-- Pasos de preparación -->
+              <section class="seccion-bloque card-blanca-detalle">
+                <h3 class="seccion-titulo-sm">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Preparación Paso a Paso
+                </h3>
+                <ol class="lista-pasos-timeline">
+                  @for (paso of rec.pasos; track $index) {
+                    <li class="paso-item">
+                      <span class="paso-numero">{{ $index + 1 }}</span>
+                      <p class="paso-texto">{{ paso }}</p>
+                    </li>
+                  }
+                </ol>
+              </section>
+            </div>
+
+            <!-- TIP DEL BARISTA EXPERTO -->
+            <div class="tip-barista-card">
+              <div class="tip-icon"><i class="fa-regular fa-lightbulb"></i></div>
+              <div class="tip-content">
+                <strong>Consejo del Barista Caxambú:</strong>
+                <p>{{ rec.tipBarista }}</p>
+              </div>
+            </div>
+
+          } @else {
+            <div class="vacio-box grande">
+              <i class="fa-solid fa-arrow-left"></i>
+              <p>Seleccioná una receta del menú izquierdo para ver la ficha completa.</p>
+            </div>
+          }
+        </section>
+
       </div>
     }
   </div>

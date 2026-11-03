@@ -1,61 +1,175 @@
-<main class="main-content vendedor-page">
-  <div class="container admin-dashboard">
-    <h2 class="heading-1">Panel de Vendedor</h2>
+<main class="main-content admin-page">
+  <div class="container admin-container">
+    
+    <!-- ENCABEZADO PRINCIPAL -->
+    <header class="admin-header">
+      <div class="admin-header-title">
+        <span class="badge-role-admin"><i class="fa-solid fa-shield-halved"></i> Modo Administrador</span>
+        <h1 class="heading-1">Panel de Control & Rentabilidad</h1>
+        <p class="admin-subtitle">
+          Supervisión de inventario, fijación de precios de costo/venta y cálculo en tiempo real de ganancias netas por pedido.
+        </p>
+      </div>
+    </header>
 
-    <!-- CONTENEDOR PRINCIPAL SUPERIOR (Inventario a la izquierda, Pedidos Pendientes a la derecha en 1/4) -->
-    <div class="top-admin-layout">
+    <!-- TARJETAS DE MÉTRICAS EJECUTIVAS (KPIs) -->
+    <section class="kpi-grid">
+      
+      <div class="kpi-card kpi-ventas">
+        <div class="kpi-icon"><i class="fa-solid fa-sack-dollar"></i></div>
+        <div class="kpi-data">
+          <span class="kpi-label">Ventas Confirmadas</span>
+          <strong class="kpi-value">${{ totalVentasConfirmadas() }}</strong>
+          <span class="kpi-subtext">Facturado acumulado</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-ganancia">
+        <div class="kpi-icon"><i class="fa-solid fa-chart-line"></i></div>
+        <div class="kpi-data">
+          <span class="kpi-label">Ganancia Neta Total</span>
+          <strong class="kpi-value">+${{ totalGananciaConfirmada() }}</strong>
+          <span class="kpi-subtext">Margen neto de ventas</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-pendientes" [class.alerta]="pedidosPendientes().length > 0">
+        <div class="kpi-icon"><i class="fa-solid fa-bell"></i></div>
+        <div class="kpi-data">
+          <span class="kpi-label">Pedidos Pendientes</span>
+          <strong class="kpi-value">{{ pedidosPendientes().length }}</strong>
+          <span class="kpi-subtext">Requieren tu aprobación</span>
+        </div>
+      </div>
+
+      <div class="kpi-card kpi-stock" [class.alerta]="productosBajoStock().length > 0">
+        <div class="kpi-icon"><i class="fa-solid fa-boxes-stacked"></i></div>
+        <div class="kpi-data">
+          <span class="kpi-label">Stock Crítico</span>
+          <strong class="kpi-value">{{ productosBajoStock().length }}</strong>
+          <span class="kpi-subtext">Productos con &le; 3 unid.</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- LAYOUT SUPERIOR: INVENTARIO & PEDIDOS PENDIENTES -->
+    <div class="admin-split-layout">
              
-      <!-- Sección de Gestión de Productos (3 partes) -->
-      <section class="admin-section inventario-section">
-        <h3>Gestión de Inventario y Precios</h3>
-        <div style="overflow-x: auto;">
-          <table class="product-management-table">
+      <!-- GESTIÓN DE PRODUCTOS Y MÁRGENES (IZQUIERDA) -->
+      <section class="admin-panel-card inventario-panel">
+        <div class="panel-header-row">
+          <div>
+            <h3><i class="fa-solid fa-boxes-packing"></i> Inventario, Costos & Precios de Venta</h3>
+            <p class="panel-desc">Definí el precio de costo para conocer automáticamente el margen y ganancia de cada café.</p>
+          </div>
+        </div>
+
+        <div class="table-responsive">
+          <table class="caxambu-admin-table">
             <thead>
               <tr>
                 <th>Producto</th>
-                <th>Stock</th>
-                <th>Precio Venta ($)</th>
-                <th>Acciones</th>
+                <th style="width: 90px; text-align: center;">Stock</th>
+                <th style="width: 125px;">P. Costo ($)</th>
+                <th style="width: 125px;">P. Venta ($)</th>
+                <th style="width: 140px;">Ganancia / Margen</th>
+                <th style="width: 110px; text-align: center;">Acciones</th>
               </tr>
             </thead>
             <tbody>
               @for (prod of productos(); track prod.id) {
-                <tr>
-                  <td>{{ prod.nombre }}</td>
+                <tr [class.fila-alerta-stock]="prod.stock <= 3 && prod.stock > 0" [class.fila-agotado]="prod.stock <= 0">
                   <td>
-                    <input type="number" [(ngModel)]="prod.stock" min="0" class="stock-input" />
+                    <div class="producto-celda">
+                      <strong>{{ prod.nombre }}</strong>
+                      @if (prod.stock <= 0) {
+                        <span class="badge-tag-stock tag-agotado">Agotado</span>
+                      } @else if (prod.stock <= 3) {
+                        <span class="badge-tag-stock tag-bajo">Stock Bajo ({{ prod.stock }})</span>
+                      }
+                    </div>
                   </td>
+                  
+                  <!-- Input Stock -->
+                  <td style="text-align: center;">
+                    <input type="number" [(ngModel)]="prod.stock" min="0" class="input-table input-stock" />
+                  </td>
+
+                  <!-- Input Precio Costo -->
                   <td>
-                    <input type="number" [(ngModel)]="prod.precio" min="0" class="price-input" />
+                    <div class="input-money-wrapper">
+                      <span class="money-prefix">$</span>
+                      <input type="number" [(ngModel)]="prod.costo" min="0" class="input-table input-costo" placeholder="0" />
+                    </div>
                   </td>
+
+                  <!-- Input Precio Venta -->
+                  <td>
+                    <div class="input-money-wrapper">
+                      <span class="money-prefix">$</span>
+                      <input type="number" [(ngModel)]="prod.precio" min="0" class="input-table input-precio" />
+                    </div>
+                  </td>
+
+                  <!-- Cálculo automático de ganancia por unidad -->
+                  <td>
+                    <div class="ganancia-celda">
+                      <strong class="ganancia-monto" [class.negativa]="calcularGananciaUnitaria(prod) < 0">
+                        {{ calcularGananciaUnitaria(prod) >= 0 ? '+' : '' }}${{ calcularGananciaUnitaria(prod) }}
+                      </strong>
+                      <span class="badge-margen" [class.negativo]="calcularMargenUnitario(prod) < 0">
+                        {{ calcularMargenUnitario(prod) }}%
+                      </span>
+                    </div>
+                  </td>
+
+                  <!-- Botones de Acción -->
                   <td class="acciones-celda">
-                    <button class="btn-sm confirm-action" (click)="guardarProducto(prod)" title="Guardar cambios">
+                    <button class="btn-action btn-save" (click)="guardarProducto(prod)" title="Guardar cambios">
                       <i class="fa-solid fa-check"></i>
                     </button>
-                    <button class="btn-sm delete-action" (click)="eliminarProducto(prod.id)" title="Eliminar producto">
+                    @if (prod.stock <= 3) {
+                      <button class="btn-action btn-whatsapp" (click)="avisarStockBajoWhatsApp(prod)" title="Notificar reposición por WhatsApp">
+                        <i class="fa-brands fa-whatsapp"></i>
+                      </button>
+                    }
+                    <button class="btn-action btn-delete" (click)="eliminarProducto(prod.id)" title="Eliminar producto">
                       <i class="fa-solid fa-trash-can"></i>
                     </button>
                   </td>
                 </tr>
               } @empty {
                 <tr>
-                  <td colspan="4" style="text-align: center;">No hay productos cargados en el inventario.</td>
+                  <td colspan="6" class="tabla-vacia">No hay productos cargados en el inventario.</td>
                 </tr>
               }
 
-              <!-- NUEVA FILA PARA AGREGAR PRODUCTO -->
-              <tr class="fila-nuevo-producto">
+              <!-- FILA PARA AGREGAR NUEVO PRODUCTO -->
+              <tr class="fila-agregar-nuevo">
                 <td>
                   <input type="text" [(ngModel)]="nuevoNombre" placeholder="Nombre del nuevo producto..." class="input-nuevo-nombre" />
                 </td>
                 <td>
-                  <input type="number" [(ngModel)]="nuevoStock" min="0" class="stock-input" />
+                  <input type="number" [(ngModel)]="nuevoStock" min="0" placeholder="0" class="input-table input-stock" />
                 </td>
                 <td>
-                  <input type="number" [(ngModel)]="nuevoPrecio" min="0" class="price-input" />
+                  <div class="input-money-wrapper">
+                    <span class="money-prefix">$</span>
+                    <input type="number" [(ngModel)]="nuevoCosto" min="0" placeholder="Costo" class="input-table input-costo" />
+                  </div>
+                </td>
+                <td>
+                  <div class="input-money-wrapper">
+                    <span class="money-prefix">$</span>
+                    <input type="number" [(ngModel)]="nuevoPrecio" min="0" placeholder="Venta" class="input-table input-precio" />
+                  </div>
+                </td>
+                <td>
+                  <span class="nuevo-hint">Calculado en guardado</span>
                 </td>
                 <td style="text-align: center;">
-                  <button class="btn-sm confirm-action" (click)="agregarNuevoProducto()" title="Agregar producto">
+                  <button class="btn-action btn-add-prod" (click)="agregarNuevoProducto()" title="Agregar nuevo producto al catálogo">
                     <i class="fa-solid fa-plus"></i>
                   </button>
                 </td>
@@ -65,93 +179,313 @@
         </div>
       </section>
 
-      <!-- Pedidos Pendientes de Aprobación (1 parte a la derecha, en vertical) -->
-      <section class="admin-section pendientes-vertical-section">
-        <h3>Pedidos Pendientes</h3>
-        <div class="order-list-vertical">
-          @for (pedido of pedidos(); track pedido.id) {
-            @if (pedido.estado === 'pendiente' || pedido.estado === 'PENDIENTE') {
-              <div class="order-card pending-card-compact">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
-                  <h4 style="margin: 0; font-size: 1.2rem; color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden' }}</h4>
-                  <span style="color: orange; font-weight: bold; text-transform: uppercase; font-size: 0.9rem;">
-                    {{ pedido.estado }}
-                  </span>
-                </div>
-                 
-                <p style="font-size: 1.1rem; color: #666; margin: 0.2rem 0;"><strong>{{ pedido.clienteEmail }}</strong></p>
-                <p style="font-size: 1rem; color: #888; margin-bottom: 0.8rem;"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</p>
-                
-                <div class="order-details-summary" style="background: #fff; padding: 0.8rem; border-radius: 6px; border: 1px dashed #ddd; margin-bottom: 0.8rem;">
-                  <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.1rem;">
-                    @for (it of pedido.items; track it.producto?.id || it.idProducto) {
-                      <li style="display: flex; justify-content: space-between; padding: 0.2rem 0; border-bottom: 1px solid #f0f0f0;">
-                        <span>{{ it.producto?.nombre || it.nombre }} (x{{ it.cantidad }})</span>
-                        <span style="font-weight: 600;">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
-                      </li>
-                    }
-                  </ul>
-                  <div style="text-align: right; margin-top: 0.5rem; font-size: 1.2rem; font-weight: bold; color: var(--dark-color);">
-                    Total: ${{ pedido.total }}
-                  </div>
-                </div>
+      <!-- PEDIDOS PENDIENTES DE APROBACIÓN (DERECHA) -->
+      <aside class="admin-panel-card pendientes-panel">
+        <div class="pendientes-header">
+          <h3>
+            <i class="fa-solid fa-clock-rotate-left"></i> Por Aprobar
+            @if (pedidosPendientes().length > 0) {
+              <span class="badge-pendientes-count">{{ pedidosPendientes().length }}</span>
+            }
+          </h3>
+        </div>
 
-                <!-- Botones de Acción -->
-                <div class="order-actions" style="display: flex; gap: 0.5rem; justify-content: flex-end;">
-                  <button class="btn-approve" (click)="cambiarEstadoPedido(pedido.id, 'confirmado')" style="background: var(--success-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
-                    <i class="fa-solid fa-check"></i>
-                  </button>
-                  <button class="btn-deny" (click)="cambiarEstadoPedido(pedido.id, 'cancelado')" style="background: var(--danger-color); color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.9rem;">
-                    <i class="fa-solid fa-xmark"></i>
+        <div class="pendientes-scroll">
+          @for (pedido of pedidosPendientes(); track pedido.id) {
+            <div class="card-pedido-pendiente">
+              
+              <div class="card-pedido-header">
+                <div>
+                  <h4 class="pedido-nro">{{ pedido.numeroCompra || 'Orden' }}</h4>
+                  <span class="pedido-cliente">{{ pedido.clienteEmail }}</span>
+                </div>
+                <div class="pedido-badges-top">
+                  <span class="badge-metodo-pago" [ngClass]="getClaseMetodoPago(pedido)">
+                    <i class="fa-solid" [ngClass]="getIconoMetodoPago(pedido)"></i>
+                    {{ obtenerMetodoPago(pedido) }}
+                  </span>
+                  <span class="badge-status-pendiente">Pendiente</span>
+                  <button class="btn-eliminar-pedido-card" (click)="abrirModalEliminarPedido(pedido)" title="Eliminar pedido definitivamente">
+                    <i class="fa-solid fa-trash-can"></i>
                   </button>
                 </div>
               </div>
-            }
+              
+              <span class="pedido-fecha"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</span>
+
+              <!-- Lista de ítems -->
+              <div class="pedido-items-box">
+                @for (it of pedido.items; track it.producto?.id || it.idProducto) {
+                  <div class="pedido-item-row">
+                    <span>{{ it.producto?.nombre || it.nombre }} <small>(x{{ it.cantidad }})</small></span>
+                    <strong>${{ (it.producto?.precio || it.precio) * it.cantidad }}</strong>
+                  </div>
+                }
+              </div>
+
+              <!-- Balance Financiero de la Venta -->
+              <div class="balance-venta-box">
+                <div class="balance-item">
+                  <span>Total Venta:</span>
+                  <strong>${{ pedido.total }}</strong>
+                </div>
+                <div class="balance-item">
+                  <span>Costo Est.:</span>
+                  <span class="costo-text">${{ calcularCostoPedido(pedido) }}</span>
+                </div>
+                <div class="balance-item balance-ganancia">
+                  <span>Ganancia Neta:</span>
+                  <strong class="ganancia-text">+${{ calcularGananciaPedido(pedido) }}</strong>
+                </div>
+              </div>
+
+              <!-- Botones de Acción -->
+              <div class="acciones-pedido-row">
+                <button class="btn-pedido-confirmar" (click)="cambiarEstadoPedido(pedido.id, 'confirmado')">
+                  <i class="fa-solid fa-check"></i> Aprobar Pedido
+                </button>
+                <button class="btn-pedido-rechazar" (click)="cambiarEstadoPedido(pedido.id, 'cancelado')">
+                  <i class="fa-solid fa-xmark"></i> Rechazar
+                </button>
+              </div>
+
+            </div>
           } @empty {
-            <div style="text-align: center; padding: 1.5rem; color: #666; border: 2px dashed #ccc; border-radius: 8px;">
-              <p style="font-size: 1.2rem; margin: 0;">No hay pedidos pendientes.</p>
+            <div class="sin-pendientes-box">
+              <i class="fa-solid fa-circle-check"></i>
+              <h4>¡Todo al día!</h4>
+              <p>No tenés pedidos pendientes de aprobación.</p>
             </div>
           }
         </div>
-      </section>
+      </aside>
 
     </div>
 
-    <!-- SECCIÓN INFERIOR: Historial de Pedidos -->
-    <section class="admin-section historial-section" style="margin-top: 2rem;">
-      <h3>Historial de Pedidos</h3>
-      <div class="order-grid-horizontal" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem;">
-        @for (pedido of pedidos(); track pedido.id) {
-          @if (pedido.estado !== 'pendiente' && pedido.estado !== 'PENDIENTE') {
-            <div class="order-card" [ngClass]="{'approved': pedido.estado === 'confirmado', 'denied': pedido.estado === 'cancelado'}">
-              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
-                <h4 style="margin: 0; color: var(--primary-color);">{{ pedido.numeroCompra || 'Orden' }}</h4>
-                <span [style.color]="pedido.estado === 'confirmado' ? 'green' : 'red'" style="font-weight: bold; text-transform: uppercase; font-size: 1.1rem;">
-                  {{ pedido.estado }}
-                </span>
+    <!-- SECCIÓN INFERIOR: HISTORIAL DE VENTAS ORGANIZADO POR DÍA Y MÉTODO DE PAGO -->
+    <section class="admin-panel-card historial-panel">
+      
+      <div class="historial-header-bar">
+        <div>
+          <h3><i class="fa-solid fa-receipt"></i> Historial de Ventas & Balance Comercial</h3>
+          <p class="panel-desc">Registro histórico agrupado por día y día de la semana, con método de pago (Efectivo / Transferencia / Mercado Pago) y ganancia neta.</p>
+        </div>
+
+        <!-- Filtros duales: Estado y Método de Pago -->
+        <div class="filtros-container">
+          <!-- Filtros de Método de Pago -->
+          <div class="filtros-metodo-pago">
+            <button class="btn-filtro-pago" [class.activo]="filtroMetodoPago() === 'todos'" (click)="cambiarFiltroMetodo('todos')">
+              Todos los medios
+            </button>
+            <button class="btn-filtro-pago metodo-btn-mp" [class.activo]="filtroMetodoPago() === 'Mercado Pago'" (click)="cambiarFiltroMetodo('Mercado Pago')">
+              <i class="fa-solid fa-mobile-screen-button"></i> Mercado Pago (${{ totalVentasMP() }})
+            </button>
+            <button class="btn-filtro-pago metodo-btn-transf" [class.activo]="filtroMetodoPago() === 'Transferencia'" (click)="cambiarFiltroMetodo('Transferencia')">
+              <i class="fa-solid fa-building-columns"></i> Transferencia (${{ totalVentasTransferencia() }})
+            </button>
+            <button class="btn-filtro-pago metodo-btn-efectivo" [class.activo]="filtroMetodoPago() === 'Efectivo'" (click)="cambiarFiltroMetodo('Efectivo')">
+              <i class="fa-solid fa-money-bill-wave"></i> Efectivo (${{ totalVentasEfectivo() }})
+            </button>
+          </div>
+
+          <!-- Filtros de Estado -->
+          <div class="filtros-historial">
+            <button class="btn-filtro-historial" [class.activo]="filtroHistorial() === 'todos'" (click)="cambiarFiltroHistorial('todos')">
+              Todos
+            </button>
+            <button class="btn-filtro-historial" [class.activo]="filtroHistorial() === 'confirmado'" (click)="cambiarFiltroHistorial('confirmado')">
+              Confirmados
+            </button>
+            <button class="btn-filtro-historial" [class.activo]="filtroHistorial() === 'cancelado'" (click)="cambiarFiltroHistorial('cancelado')">
+              Cancelados
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- LISTADO AGRUPADO POR DÍA -->
+      <div class="historial-grupos-container">
+        @for (grupo of gruposVentasPorDia(); track grupo.fechaKey) {
+          <div class="grupo-dia-seccion">
+            
+            <!-- ENCABEZADO DEL DÍA -->
+            <div class="grupo-dia-header">
+              <div class="grupo-dia-info">
+                <div class="grupo-dia-badge-icon">
+                  <i class="fa-solid fa-calendar-day"></i>
+                </div>
+                <div>
+                  <h4 class="grupo-dia-titulo">{{ grupo.fechaTexto }}</h4>
+                  <span class="grupo-dia-sub">{{ grupo.pedidos.length }} {{ grupo.pedidos.length === 1 ? 'pedido registrado' : 'pedidos registrados' }}</span>
+                </div>
               </div>
-              
-              <p style="font-size: 1.2rem; color: #666; margin: 0.3rem 0;">Cliente: <strong>{{ pedido.clienteEmail }}</strong></p>
-              <p style="font-size: 1.1rem; color: #888; margin-bottom: 1rem;"><i class="fa-regular fa-calendar"></i> {{ pedido.fechaHora || 'Reciente' }}</p>
-              
-              <div class="order-details-summary" style="background: #fff; padding: 1rem; border-radius: 6px; border: 1px dashed #ddd;">
-                <ul style="list-style: none; padding: 0; margin: 0; font-size: 1.2rem;">
-                  @for (it of pedido.items; track it.producto?.id || it.idProducto) {
-                    <li style="display: flex; justify-content: space-between; padding: 0.3rem 0; border-bottom: 1px solid #f0f0f0;">
-                      <span>{{ it.producto?.nombre || it.nombre }} (x{{ it.cantidad }})</span>
-                      <span style="font-weight: 600;">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
-                    </li>
-                  }
-                </ul>
-                <div style="text-align: right; margin-top: 0.8rem; font-size: 1.3rem; font-weight: bold; color: var(--dark-color);">
-                  Total: ${{ pedido.total }}
+
+              <div class="grupo-dia-totales">
+                <div class="grupo-total-item">
+                  <span class="label">Ventas del Día</span>
+                  <strong class="valor-venta">${{ grupo.totalVentasDia }}</strong>
+                </div>
+                <div class="grupo-total-item grupo-total-ganancia">
+                  <span class="label">Ganancia Neta</span>
+                  <strong class="valor-ganancia">+${{ grupo.totalGananciaDia }}</strong>
                 </div>
               </div>
             </div>
-          }
+
+            <!-- GRILLA DE PEDIDOS DEL DÍA -->
+            <div class="historial-cards-grid">
+              @for (pedido of grupo.pedidos; track pedido.id) {
+                <div class="order-card-modern" [class.order-confirmado]="pedido.estado === 'confirmado'" [class.order-cancelado]="pedido.estado === 'cancelado'">
+                  
+                  <div class="order-top-bar">
+                    <div class="order-id-group">
+                      <span class="order-icon-badge">
+                        <i class="fa-solid fa-receipt"></i>
+                      </span>
+                      <div>
+                        <h4 class="order-numero">{{ pedido.numeroCompra || 'Orden' }}</h4>
+                        <span class="order-cliente">{{ pedido.clienteEmail }}</span>
+                      </div>
+                    </div>
+
+                    <div class="order-top-badges">
+                      <!-- Badge Método de Pago -->
+                      <span class="badge-metodo-pago" [ngClass]="getClaseMetodoPago(pedido)">
+                        <i class="fa-solid" [ngClass]="getIconoMetodoPago(pedido)"></i>
+                        {{ obtenerMetodoPago(pedido) }}
+                      </span>
+
+                      <!-- Badge Estado -->
+                      <span class="badge-status-pago" [class.badge-confirmado]="pedido.estado === 'confirmado'" [class.badge-cancelado]="pedido.estado === 'cancelado'">
+                        {{ pedido.estado === 'confirmado' ? 'Confirmado' : 'Cancelado' }}
+                      </span>
+
+                      <!-- Botón Eliminar Pedido -->
+                      <button class="btn-eliminar-pedido-card" (click)="abrirModalEliminarPedido(pedido)" title="Eliminar pedido definitivamente">
+                        <i class="fa-solid fa-trash-can"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div class="order-date-text">
+                    <i class="fa-regular fa-clock"></i> {{ pedido.fechaHora || 'Reciente' }}
+                  </div>
+
+                  <!-- Ítems del pedido -->
+                  <div class="order-items-scroll">
+                    @for (it of pedido.items; track it.producto?.id || it.idProducto) {
+                      <div class="order-single-item">
+                        <span class="item-name">• {{ it.producto?.nombre || it.nombre }} <span class="item-qty">(x{{ it.cantidad }})</span></span>
+                        <span class="item-price">${{ (it.producto?.precio || it.precio) * it.cantidad }}</span>
+                      </div>
+                    }
+                  </div>
+
+                  <!-- DESGLOSE FINANCIERO: PRECIO TOTAL Y GANANCIA X VENTA -->
+                  <div class="order-financial-card">
+                    <div class="financial-row">
+                      <span class="financial-label">Precio Total Venta:</span>
+                      <strong class="financial-total">${{ pedido.total }}</strong>
+                    </div>
+                    <div class="financial-row">
+                      <span class="financial-label">Costo Mercadería:</span>
+                      <span class="financial-costo">${{ calcularCostoPedido(pedido) }}</span>
+                    </div>
+                    
+                    <div class="financial-divider"></div>
+
+                    <div class="financial-row financial-profit-highlight" [class.cancelado-profit]="pedido.estado === 'cancelado'">
+                      <span class="financial-profit-label">
+                        <i class="fa-solid fa-arrow-trend-up"></i> Ganancia x Venta:
+                      </span>
+                      <div class="financial-profit-right">
+                        <strong class="financial-profit-val">
+                          {{ pedido.estado === 'confirmado' ? '+' : '' }}${{ calcularGananciaPedido(pedido) }}
+                        </strong>
+                        @if (pedido.estado === 'confirmado') {
+                          <span class="badge-roi-percent">{{ calcularMargenPorcentajePedido(pedido) }}%</span>
+                        }
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              }
+            </div>
+
+          </div>
+        } @empty {
+          <div class="historial-vacio">
+            <i class="fa-solid fa-inbox"></i>
+            <p>No hay pedidos registrados con los filtros seleccionados.</p>
+          </div>
         }
       </div>
+
     </section>
 
   </div>
+
+  <!-- MODAL DE CONFIRMACIÓN PARA ELIMINAR PEDIDO DEFINITIVAMENTE -->
+  @if (pedidoAEliminar()) {
+    <div class="modal-backdrop-eliminar" (click)="cerrarModalEliminarPedido()">
+      <div class="modal-card-eliminar" (click)="$event.stopPropagation()">
+        
+        <div class="modal-eliminar-icon">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        
+        <h3 class="modal-eliminar-titulo">¿Eliminar este pedido definitivamente?</h3>
+        
+        <p class="modal-eliminar-desc">
+          Estás por borrar de forma permanente la orden <strong>{{ pedidoAEliminar().numeroCompra || 'Seleccionada' }}</strong>.
+        </p>
+
+        <div class="modal-eliminar-resumen">
+          <div class="resumen-row">
+            <span>Cliente:</span>
+            <strong>{{ pedidoAEliminar().clienteEmail }}</strong>
+          </div>
+          <div class="resumen-row">
+            <span>Total Venta:</span>
+            <strong>${{ pedidoAEliminar().total }}</strong>
+          </div>
+          <div class="resumen-row">
+            <span>Método de Pago:</span>
+            <strong>{{ obtenerMetodoPago(pedidoAEliminar()) }}</strong>
+          </div>
+          <div class="resumen-row">
+            <span>Estado:</span>
+            <span class="badge-status-pago" [class.badge-confirmado]="pedidoAEliminar().estado === 'confirmado'" [class.badge-cancelado]="pedidoAEliminar().estado === 'cancelado'">
+              {{ pedidoAEliminar().estado }}
+            </span>
+          </div>
+        </div>
+
+        <div class="modal-eliminar-alerta">
+          <i class="fa-solid fa-shield-halved"></i>
+          <div>
+            <strong>Sincronización total en vivo:</strong>
+            <p>Se borrará de este panel y <u>también desaparecerá inmediatamente de las compras del cliente</u>.</p>
+          </div>
+        </div>
+
+        <div class="modal-eliminar-acciones">
+          <button class="btn-modal-cancelar" (click)="cerrarModalEliminarPedido()" [disabled]="eliminandoPedido()">
+            Cancelar
+          </button>
+          <button class="btn-modal-confirmar-eliminar" (click)="confirmarEliminarPedido()" [disabled]="eliminandoPedido()">
+            @if (eliminandoPedido()) {
+              <i class="fa-solid fa-circle-notch fa-spin"></i> Eliminando...
+            } @else {
+              <i class="fa-solid fa-trash-can"></i> Sí, eliminar orden
+            }
+          </button>
+        </div>
+
+      </div>
+    </div>
+  }
+
 </main>

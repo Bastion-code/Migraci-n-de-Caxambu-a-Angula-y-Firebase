@@ -1,0 +1,884 @@
+/* ==========================================================================
+   RECETAS & LABORATORIO CAXAMBÚ - ESTILOS PROFESIONALES
+   ========================================================================== */
+
+.recetas-page {
+  padding: 3rem 0 6rem 0;
+  background-color: var(--background-color, #f9f5f0);
+  min-height: calc(100vh - 120px);
+}
+
+/* Encabezado */
+.recetas-header {
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 3rem auto;
+}
+
+.badge-subtitulo {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--primary-color-dark, #b5906f);
+  background-color: rgba(181, 144, 111, 0.15);
+  padding: 0.4rem 1.4rem;
+  border-radius: 20px;
+  margin-bottom: 1rem;
+}
+
+.recetas-header .heading-1 {
+  font-size: 3.6rem;
+  color: var(--primary-color, #402723);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.recetas-descripcion-gral {
+  font-size: 1.5rem;
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Loading */
+.loading-state {
+  text-align: center;
+  padding: 8rem 0;
+  font-size: 1.8rem;
+  color: var(--primary-color, #402723);
+}
+
+.loading-state i {
+  font-size: 3.5rem;
+  margin-bottom: 1.5rem;
+  display: block;
+  color: var(--primary-color-dark, #b5906f);
+}
+
+/* ==========================================================================
+   LAYOUT SPLIT: Columna Izquierda (Selector) + Derecha (Detalle)
+   ========================================================================== */
+.recetas-layout {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* ==========================================================================
+   COLUMNA IZQUIERDA: LISTA & BUSCADOR
+   ========================================================================== */
+.columna-lista {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  position: sticky;
+  top: 90px;
+}
+
+/* Buscador */
+.buscador-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.buscador-icon {
+  position: absolute;
+  left: 1.2rem;
+  font-size: 1.4rem;
+  color: #888;
+}
+
+.buscador-input {
+  width: 100%;
+  padding: 1.2rem 3.5rem 1.2rem 3.6rem;
+  font-size: 1.35rem;
+  border: 1.5px solid #e0d9cf;
+  border-radius: 10px;
+  background-color: #faf8f5;
+  color: #333;
+  transition: all 0.25s ease;
+  font-family: inherit;
+}
+
+.buscador-input:focus {
+  outline: none;
+  border-color: var(--primary-color, #402723);
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(64, 39, 35, 0.12);
+}
+
+.btn-clear {
+  position: absolute;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  padding: 0.4rem;
+  font-size: 1.3rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-clear:hover {
+  color: #333;
+  background: #eee;
+}
+
+/* Categorías pills */
+.filtros-categorias {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 1.2rem;
+}
+
+.pill-btn {
+  background: #f3efe9;
+  border: 1px solid transparent;
+  color: #555;
+  font-size: 1.15rem;
+  font-weight: 500;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.pill-btn:hover {
+  background: #e7dfd4;
+  color: #222;
+}
+
+.pill-btn.activo {
+  background: var(--primary-color, #402723);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.recetas-meta-info {
+  font-size: 1.15rem;
+  color: #888;
+  margin-bottom: 1rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #f0eae1;
+  text-align: right;
+}
+
+/* Lista Scroll */
+.lista-recetas-scroll {
+  max-height: 580px;
+  overflow-y: auto;
+  padding-right: 0.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+/* Scrollbar personalizada fina */
+.lista-recetas-scroll::-webkit-scrollbar {
+  width: 5px;
+}
+.lista-recetas-scroll::-webkit-scrollbar-track {
+  background: #f7f4ef;
+  border-radius: 10px;
+}
+.lista-recetas-scroll::-webkit-scrollbar-thumb {
+  background: #d4c7b8;
+  border-radius: 10px;
+}
+.lista-recetas-scroll::-webkit-scrollbar-thumb:hover {
+  background: #b5906f;
+}
+
+/* Card individual en la lista */
+.receta-item-card {
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  padding: 1rem 1.2rem;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  background-color: #faf8f5;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.receta-item-card:hover {
+  background-color: #f2eee8;
+  transform: translateX(3px);
+}
+
+.receta-item-card.activa {
+  background-color: #ffffff;
+  border-color: var(--primary-color, #402723);
+  box-shadow: 0 4px 12px rgba(64, 39, 35, 0.12);
+}
+
+.receta-item-img {
+  width: 55px;
+  height: 55px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #eee;
+}
+
+.receta-item-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.receta-item-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.badge-mini-categoria {
+  font-size: 0.95rem;
+  color: var(--primary-color-dark, #b5906f);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: block;
+}
+
+.receta-item-info h4 {
+  font-size: 1.4rem;
+  color: var(--dark-color, #402723);
+  margin: 0.2rem 0;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.receta-item-ingredientes {
+  font-size: 1.15rem;
+  color: #777;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.receta-item-arrow {
+  color: #bbb;
+  font-size: 1.2rem;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.receta-item-card.activa .receta-item-arrow {
+  color: var(--primary-color, #402723);
+  transform: translateX(2px);
+}
+
+/* Estado vacío */
+.vacio-box {
+  text-align: center;
+  padding: 3rem 1.5rem;
+  color: #777;
+}
+
+.vacio-icon {
+  font-size: 3rem;
+  color: #ccc;
+  margin-bottom: 1rem;
+}
+
+.btn-sm-reset {
+  margin-top: 1rem;
+  background: var(--primary-color, #402723);
+  color: #fff;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+/* ==========================================================================
+   COLUMNA DERECHA: FICHA TÉCNICA DETALLE
+   ========================================================================== */
+.columna-detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Hero card de la receta */
+.detalle-hero-card {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  background: #ffffff;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+.hero-img-container {
+  position: relative;
+  min-height: 240px;
+  background-color: #222;
+}
+
+.hero-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-badge-tag {
+  position: absolute;
+  top: 1.2rem;
+  left: 1.2rem;
+  background: rgba(44, 30, 26, 0.85);
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 600;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+
+.hero-content {
+  padding: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.hero-content h2 {
+  font-size: 2.8rem;
+  color: var(--primary-color, #402723);
+  margin-bottom: 1rem;
+  font-weight: 700;
+}
+
+.hero-description {
+  font-size: 1.45rem;
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1.5rem;
+}
+
+.hero-tags-ingredientes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+}
+
+.tag-ingrediente {
+  background: #f5efe6;
+  color: var(--primary-color, #402723);
+  font-size: 1.2rem;
+  font-weight: 500;
+  padding: 0.4rem 1rem;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tag-ingrediente i {
+  color: var(--success-color, #28a745);
+  font-size: 1rem;
+}
+
+/* Secciones y Títulos */
+.seccion-bloque {
+  display: flex;
+  flex-direction: column;
+}
+
+.seccion-titulo {
+  font-size: 1.8rem;
+  color: var(--dark-color, #402723);
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.seccion-titulo i {
+  color: var(--primary-color-dark, #b5906f);
+}
+
+.seccion-titulo-sm {
+  font-size: 1.6rem;
+  color: var(--dark-color, #402723);
+  margin-bottom: 1.2rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+/* Grid de Métricas Barista (Gramaje, Molienda, Ratio, etc.) */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.metrica-card {
+  background: #ffffff;
+  padding: 1.5rem;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 1.2rem;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease;
+}
+
+.metrica-card:hover {
+  transform: translateY(-2px);
+}
+
+.metrica-icon {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f8f4ee, #e9dfd1);
+  color: var(--primary-color, #402723);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  flex-shrink: 0;
+}
+
+.metrica-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.metrica-label {
+  font-size: 1.1rem;
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.metrica-valor {
+  font-size: 1.35rem;
+  color: var(--dark-color, #402723);
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+
+/* ==========================================================================
+   TARJETA DESTACADA: CAFÉ CAXAMBÚ RECOMENDADO
+   ========================================================================== */
+.caxambu-recomendado-card {
+  background: linear-gradient(135deg, #ffffff 0%, #faf6f0 100%);
+  border-radius: 18px;
+  border: 2px solid #e7d8c6;
+  box-shadow: 0 8px 25px rgba(64, 39, 35, 0.08);
+  padding: 2.2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.recomendado-header-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: var(--primary-color, #402723);
+  color: #ffffff;
+  font-size: 1.15rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  padding: 0.5rem 1.4rem;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.recomendado-header-pill i {
+  color: #ffd700;
+}
+
+.recomendado-body {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 2.2rem;
+  align-items: center;
+}
+
+.recomendado-img-box {
+  width: 140px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 0.8rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.recomendado-img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 5px 8px rgba(0, 0, 0, 0.15));
+}
+
+.recomendado-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.recomendado-tipo {
+  font-size: 1.2rem;
+  color: var(--primary-color-dark, #b5906f);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.recomendado-nombre {
+  font-size: 2.2rem;
+  color: var(--primary-color, #402723);
+  font-weight: 700;
+  margin: 0.3rem 0 0.8rem 0;
+}
+
+.notas-cata-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.notas-label {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #555;
+}
+
+.badge-nota {
+  background: #eedfcb;
+  color: #3f2824;
+  font-size: 1.15rem;
+  font-weight: 600;
+  padding: 0.3rem 0.9rem;
+  border-radius: 12px;
+}
+
+.recomendado-por-que {
+  font-size: 1.35rem;
+  color: #4a4a4a;
+  line-height: 1.5;
+  margin-bottom: 1.5rem;
+}
+
+.btn-comprar-grano {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: var(--primary-color, #402723);
+  color: #ffffff !important;
+  font-size: 1.35rem;
+  font-weight: 600;
+  padding: 0.9rem 1.8rem;
+  border-radius: 10px;
+  text-decoration: none;
+  transition: all 0.25s ease;
+  width: fit-content;
+}
+
+.btn-comprar-grano:hover {
+  background: #2b1815;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(64, 39, 35, 0.25);
+}
+
+/* ==========================================================================
+   GRID INGREDIENTES & PASOS
+   ========================================================================== */
+.pasos-ingredientes-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.card-blanca-detalle {
+  background: #ffffff;
+  padding: 2.2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.lista-ingredientes-detallados {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.lista-ingredientes-detallados li {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 1.35rem;
+  color: #444;
+  padding-bottom: 0.8rem;
+  border-bottom: 1px solid #f5eee6;
+}
+
+.lista-ingredientes-detallados li i {
+  color: var(--primary-color-dark, #b5906f);
+  font-size: 1.4rem;
+}
+
+/* Timeline de Pasos */
+.lista-pasos-timeline {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.paso-item {
+  display: flex;
+  gap: 1.2rem;
+  align-items: flex-start;
+}
+
+.paso-numero {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--primary-color, #402723);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 0.1rem;
+}
+
+.paso-texto {
+  font-size: 1.35rem;
+  color: #444;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* Tip Barista Card */
+.tip-barista-card {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+  background: #fbf5ea;
+  border-left: 4px solid #d49c4f;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+}
+
+.tip-icon {
+  font-size: 2.2rem;
+  color: #d49c4f;
+  flex-shrink: 0;
+}
+
+.tip-content strong {
+  display: block;
+  font-size: 1.35rem;
+  color: var(--primary-color, #402723);
+  margin-bottom: 0.3rem;
+}
+
+.tip-content p {
+  font-size: 1.3rem;
+  color: #555;
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ==========================================================================
+   MODO OSCURO (COMPATIBILIDAD)
+   ========================================================================== */
+body.dark-mode .recetas-page {
+  background-color: #1a1615;
+}
+
+body.dark-mode .recetas-header .heading-1 {
+  color: #f5eee6;
+}
+
+body.dark-mode .recetas-descripcion-gral {
+  color: #aaa;
+}
+
+body.dark-mode .columna-lista,
+body.dark-mode .detalle-hero-card,
+body.dark-mode .metrica-card,
+body.dark-mode .card-blanca-detalle {
+  background: #25201e;
+  border-color: #38312d;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+body.dark-mode .buscador-input {
+  background: #1b1716;
+  border-color: #38312d;
+  color: #f5eee6;
+}
+
+body.dark-mode .pill-btn {
+  background: #332b27;
+  color: #ccc;
+}
+
+body.dark-mode .pill-btn.activo {
+  background: #b5906f;
+  color: #1a1615;
+}
+
+body.dark-mode .receta-item-card {
+  background-color: #1f1b19;
+}
+
+body.dark-mode .receta-item-card.activa {
+  background-color: #2e2723;
+  border-color: #b5906f;
+}
+
+body.dark-mode .receta-item-info h4 {
+  color: #f5eee6;
+}
+
+body.dark-mode .hero-content h2,
+body.dark-mode .seccion-titulo,
+body.dark-mode .seccion-titulo-sm,
+body.dark-mode .metrica-valor,
+body.dark-mode .recomendado-nombre {
+  color: #f5eee6;
+}
+
+body.dark-mode .hero-description,
+body.dark-mode .paso-texto,
+body.dark-mode .lista-ingredientes-detallados li {
+  color: #ccc;
+}
+
+body.dark-mode .caxambu-recomendado-card {
+  background: linear-gradient(135deg, #2b2421 0%, #201b19 100%);
+  border-color: #4a3d36;
+}
+
+body.dark-mode .recomendado-por-que {
+  color: #bbb;
+}
+
+body.dark-mode .recomendado-img-box {
+  background: #322b27;
+}
+
+body.dark-mode .tip-barista-card {
+  background: #2b2216;
+  border-left-color: #e5a742;
+}
+
+body.dark-mode .tip-content strong {
+  color: #f5d496;
+}
+
+body.dark-mode .tip-content p {
+  color: #ddd;
+}
+
+/* ==========================================================================
+   RESPONSIVE DESIGN (TABLETS & MÓVILES)
+   ========================================================================== */
+@media (max-width: 1024px) {
+  .recetas-layout {
+    grid-template-columns: 320px 1fr;
+    gap: 2rem;
+  }
+
+  .metricas-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .detalle-hero-card {
+    grid-template-columns: 220px 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .recetas-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .columna-lista {
+    position: static;
+  }
+
+  .lista-recetas-scroll {
+    max-height: 380px;
+  }
+
+  .detalle-hero-card {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-img-container {
+    min-height: 200px;
+  }
+
+  .metricas-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pasos-ingredientes-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .recomendado-body {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .recomendado-img-box {
+    margin: 0 auto;
+  }
+
+  .notas-cata-row {
+    justify-content: center;
+  }
+
+  .btn-comprar-grano {
+    width: 100%;
+    justify-content: center;
+  }
+}

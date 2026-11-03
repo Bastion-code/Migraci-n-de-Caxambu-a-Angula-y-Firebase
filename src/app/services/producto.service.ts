@@ -7,13 +7,13 @@ import {
   updateDoc,
   deleteDoc,
   runTransaction,
-  query, // Agregado para filtrar reseñas
-  where  // Agregado para filtrar reseñas
+  query,
+  where
 } from 'firebase/firestore';
 import { collectionData } from 'rxfire/firestore';
 import { Observable } from 'rxjs';
 import { FIRESTORE } from '../app.config';
-import { Producto, Resena } from '../models/producto.model'; // Asegurate de importar Resena
+import { Producto, Resena } from '../models/producto.model';
 
 export interface ItemCarrito {
   producto: Producto;
@@ -54,10 +54,11 @@ export class ProductoService {
   }
 
   // Crear pedido básico
-  crearPedido(pedido: { items: any[]; clienteEmail: string; total: number; numeroCompra: string; fechaHora: string; estado: string }) {
+  crearPedido(pedido: { items: any[]; clienteEmail: string; total: number; numeroCompra: string; fechaHora: string; estado: string; metodoPago?: string }) {
     const pedidosColeccion = collection(this.firestore, 'pedidos');
     return addDoc(pedidosColeccion, {
       ...pedido,
+      metodoPago: pedido.metodoPago || 'Mercado Pago',
       timestamp: new Date()
     });
   }
@@ -65,15 +66,12 @@ export class ProductoService {
   // ==========================================
   // SISTEMA DE RESEÑAS
   // ==========================================
-
-  // Obtener reseñas de un producto específico
   getResenasPorProducto(productoId: string): Observable<Resena[]> {
     const resenasColeccion = collection(this.firestore, 'resenas');
     const q = query(resenasColeccion, where('productoId', '==', productoId));
     return collectionData(q, { idField: 'id' }) as Observable<Resena[]>;
   }
 
-  // Crear una nueva reseña
   crearResena(resena: Omit<Resena, 'id' | 'fechaHora' | 'timestamp'>) {
     const resenasColeccion = collection(this.firestore, 'resenas');
     
@@ -92,8 +90,6 @@ export class ProductoService {
   // ==========================================
   // UTILIDADES Y TRANSACCIONES
   // ==========================================
-
-  // Mapeo de imágenes locales
   obtenerImagenProducto(nombre: string): string {
     if (!nombre) return 'assets/img/250g-colombiano-brasil.png';
     
@@ -122,8 +118,8 @@ export class ProductoService {
     }
   }
 
-  // Finalizar Compra: Lecturas primero, escrituras después de forma segura cumpliendo restricciones de transacciones
-  async finalizarCompra(clienteEmail: string, carrito: ItemCarrito[]) {
+  // Finalizar Compra: Lecturas primero, escrituras después con método de pago registrado
+  async finalizarCompra(clienteEmail: string, carrito: ItemCarrito[], metodoPago: string = 'Mercado Pago') {
     const pedidosColeccion = collection(this.firestore, 'pedidos');
     const numeroCompra = 'CAX-' + Math.floor(1000 + Math.random() * 9000);
     const fechaActual = new Date().toLocaleString('es-AR', {
@@ -175,6 +171,7 @@ export class ProductoService {
         total,
         numeroCompra,
         fechaHora: fechaActual,
+        metodoPago: metodoPago || 'Mercado Pago',
         estado: 'pendiente',
         timestamp: new Date()
       });
@@ -222,5 +219,43 @@ export class ProductoService {
 
       transaction.update(pedidoRef, { estado: 'cancelado' });
     });
+  }
+
+  // Eliminar Pedido definitivamente (de la base de datos, del admin y de la vista del cliente)
+  async eliminarPedido(idPedido: string, restaurarStockSiPendiente: boolean = true) {
+    const pedidoRef = doc(this.firestore, 'pedidos', idPedido);
+
+    if (restaurarStockSiPendiente) {
+      return await runTransaction(this.firestore, async (transaction) => {
+        const pedidoDoc = await transaction.get(pedidoRef);
+        if (!pedidoDoc.exists()) return;
+
+        const data = pedidoDoc.data();
+        // Si el pedido estaba pendiente, reingresar el stock retenido al catálogo
+        if (data && (data['estado'] === 'pendiente' || data['estado'] === 'PENDIENTE')) {
+          const items = data['items'] || [];
+          const prodChecks = [];
+          for (const item of items) {
+            const idProd = item.producto?.id || item.idProducto;
+            const cant = item.cantidad || 0;
+            if (idProd) {
+              const prodRef = doc(this.firestore, `productos/${idProd}`);
+              const prodDoc = await transaction.get(prodRef);
+              prodChecks.push({ prodRef, prodDoc, cant });
+            }
+          }
+          for (const check of prodChecks) {
+            if (check.prodDoc.exists()) {
+              const currentStock = check.prodDoc.data()?.['stock'] || 0;
+              transaction.update(check.prodRef, { stock: currentStock + check.cant });
+            }
+          }
+        }
+
+        transaction.delete(pedidoRef);
+      });
+    } else {
+      return await deleteDoc(pedidoRef);
+    }
   }
 }

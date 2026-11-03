@@ -6,6 +6,7 @@ import { LoginComponent } from './pages/login/login';
 import { Registro } from './pages/registro/registro';
 import { Perfil } from './pages/perfil/perfil';
 import { authGuard } from './guards/auth.guard';
+import { adminGuard } from './guards/admin.guard';
 import { AdminComponent } from './pages/admin/admin';
 import { Recetas } from './pages/recetas/recetas';
 
@@ -14,11 +15,10 @@ export const routes: Routes = [
   { path: 'tienda', component: Tienda },
   { path: 'soporte', component: Soporte },
   { path: 'login', component: LoginComponent },
-
   { path: 'registro', component: Registro },
   { path: 'perfil', component: Perfil, canActivate: [authGuard] },
-  { path: 'vendedor', component: AdminComponent },
-  { path: 'admin', component: AdminComponent },
+  { path: 'vendedor', redirectTo: 'admin', pathMatch: 'full' },
+  { path: 'admin', component: AdminComponent, canActivate: [adminGuard] },
   { path: 'recetas', component: Recetas },
   { path: '**', redirectTo: 'tienda' }
 ];
